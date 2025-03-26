@@ -12,7 +12,6 @@ if TYPE_CHECKING:
 
 def isinstance_without_import(instance, module, name):
     for cls in type(instance).mro():
-        print((cls.__module__, cls.__name__))
         if (cls.__module__, cls.__name__) == (module, name):
             return True
     return False
