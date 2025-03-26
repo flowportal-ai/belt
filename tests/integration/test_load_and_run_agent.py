@@ -11,6 +11,6 @@ from flow_portal import load_agent, run_agent, AgentSchema
     reason="Integration tests require `OPENAI_API_KEY` env var",
 )
 def test_load_and_run_agent(framework):
-    agent = load_agent(framework, AgentSchema(model_id="o3-mini"))
+    agent = load_agent(framework, AgentSchema(model_id="gpt-4o-mini"))
     result = run_agent(agent, "What day is today?")
     assert result

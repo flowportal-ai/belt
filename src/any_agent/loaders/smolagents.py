@@ -16,7 +16,7 @@ try:
 except ImportError:
     smolagents_available = None
 
-DEFAULT_AGENT_CLASS = "ToolCallingAgent"
+DEFAULT_AGENT_TYPE = "ToolCallingAgent"
 DEFAULT_MODEL_CLASS = "LiteLLMModel"
 
 
@@ -50,11 +50,11 @@ def load_smolagents_agent(
     managed_agents_instanced = []
     if managed_agents:
         for managed_agent in managed_agents:
-            agent_class = getattr(
-                smolagents, managed_agent.agent_class or DEFAULT_AGENT_CLASS
+            agent_type = getattr(
+                smolagents, managed_agent.agent_type or DEFAULT_AGENT_TYPE
             )
             managed_agents_instanced.append(
-                agent_class(
+                agent_type(
                     name=managed_agent.name,
                     model=_get_model(managed_agent),
                     tools=import_and_wrap_tools(
@@ -65,10 +65,10 @@ def load_smolagents_agent(
                 )
             )
 
-    main_agent_class = getattr(
-        smolagents, main_agent.agent_class or DEFAULT_AGENT_CLASS
+    main_agent_type = getattr(
+        smolagents, main_agent.agent_type or DEFAULT_AGENT_TYPE
     )
-    main_agent_instance = main_agent_class(
+    main_agent_instance = main_agent_type(
         name=main_agent.name,
         model=_get_model(main_agent),
         tools=tools,

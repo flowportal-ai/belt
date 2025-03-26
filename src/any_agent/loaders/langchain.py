@@ -6,7 +6,7 @@ from flow_portal.tools.wrappers import import_and_wrap_tools, wrap_tool_langchai
 
 try:
     from langchain.chat_models import init_chat_model
-    from langchain.agents import create_tool_calling_agent
+    from langgraph.prebuilt import create_react_agent
 
     langchain_available = True
 except ImportError:
@@ -34,8 +34,11 @@ def load_lanchain_agent(
     imported_tools = import_and_wrap_tools(main_agent.tools, wrap_tool_langchain)
 
     model = init_chat_model(main_agent.model_id)
-    main_agent_instance = create_tool_calling_agent(
+    
+    main_agent_instance = create_react_agent(
         model=model,
         tools=imported_tools,
+        prompt=main_agent.instructions
     )
+
     return main_agent_instance

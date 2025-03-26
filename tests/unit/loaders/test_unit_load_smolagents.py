@@ -6,7 +6,7 @@ from unittest.mock import patch, MagicMock
 from flow_portal.schema import AgentSchema
 from flow_portal.loaders.smolagents import (
     load_smolagents_agent,
-    DEFAULT_AGENT_CLASS,
+    DEFAULT_AGENT_TYPE,
     DEFAULT_MODEL_CLASS,
 )
 from flow_portal.tools import search_web, visit_webpage
@@ -18,7 +18,7 @@ def test_load_smolagent_default():
     mock_tool = MagicMock()
 
     with (
-        patch(f"smolagents.{DEFAULT_AGENT_CLASS}", mock_agent),
+        patch(f"smolagents.{DEFAULT_AGENT_TYPE}", mock_agent),
         patch(f"smolagents.{DEFAULT_MODEL_CLASS}", mock_model),
         patch("smolagents.tool", mock_tool),
     ):
@@ -42,7 +42,7 @@ def test_load_smolagent_with_api_base_and_api_key_var():
     mock_tool = MagicMock()
 
     with (
-        patch(f"smolagents.{DEFAULT_AGENT_CLASS}", mock_agent),
+        patch(f"smolagents.{DEFAULT_AGENT_TYPE}", mock_agent),
         patch(f"smolagents.{DEFAULT_MODEL_CLASS}", mock_model),
         patch("smolagents.tool", mock_tool),
         patch.dict(os.environ, {"OPENAI_API_KEY": "BAR"}),
