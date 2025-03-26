@@ -44,14 +44,14 @@ class JsonFileSpanExporter(SpanExporter):
 
 
 def get_tracer_provider(
-    project_name: str, output_dir: str = "telemetry_output"
+    project_name: str, output_dir: str = "output"
 ) -> tuple[TracerProvider, str | None]:
     """
     Create a tracer_provider based on the selected mode.
 
     Args:
         project_name: Name of the project for tracing
-        output_dir: The directory where the telemetry output will be stored. Defaults to "telemetry_output".
+        output_dir: The directory where the telemetry output will be stored. Defaults to "output".
 
     Returns:
         tracer_provider: The configured tracer provider
