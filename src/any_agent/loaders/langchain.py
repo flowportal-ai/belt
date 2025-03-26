@@ -34,11 +34,9 @@ def load_lanchain_agent(
     imported_tools = import_and_wrap_tools(main_agent.tools, wrap_tool_langchain)
 
     model = init_chat_model(main_agent.model_id)
-    
+
     main_agent_instance = create_react_agent(
-        model=model,
-        tools=imported_tools,
-        prompt=main_agent.instructions
+        model=model, tools=imported_tools, prompt=main_agent.instructions
     )
 
     return main_agent_instance

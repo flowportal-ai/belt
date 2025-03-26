@@ -60,19 +60,19 @@ def load_smolagents_agent(
                     tools=import_and_wrap_tools(
                         managed_agent.tools, wrap_tool_smolagents
                     ),
+                    prompt_templates={"system_prompt": managed_agent.instructions},
                     description=managed_agent.description
                     or f"Use the agent: {managed_agent.name}",
                 )
             )
 
-    main_agent_type = getattr(
-        smolagents, main_agent.agent_type or DEFAULT_AGENT_TYPE
-    )
+    main_agent_type = getattr(smolagents, main_agent.agent_type or DEFAULT_AGENT_TYPE)
     main_agent_instance = main_agent_type(
         name=main_agent.name,
         model=_get_model(main_agent),
         tools=tools,
         managed_agents=managed_agents_instanced,
+        prompt_templates={"system_prompt": managed_agent.instructions},
     )
 
     return main_agent_instance

@@ -8,6 +8,6 @@ def run_langchain_agent(agent, query):
         message = s["messages"][-1]
         if isinstance(message, tuple):
             print(message)
-        else:   
+        else:
             message.pretty_print()
     return message

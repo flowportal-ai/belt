@@ -32,7 +32,7 @@ def run_agent(
         The type of the results depend on the `agent`'s framework.
     """
     if isinstance_without_import(agent, "langchain_core.runnables.base", "Runnable"):
-        return run_langchain_agent(agent, query)    
+        return run_langchain_agent(agent, query)
     if isinstance_without_import(agent, "agents.agent", "Agent"):
         return run_openai_agent(agent, query)
     if isinstance_without_import(agent, "smolagents.agents", "MultiStepAgent"):
