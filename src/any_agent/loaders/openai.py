@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from loguru import logger
 
@@ -7,6 +7,8 @@ from flow_portal.schema import AgentSchema
 from flow_portal.instructions import get_instructions
 from flow_portal.tools.wrappers import import_and_wrap_tools, wrap_tool_openai
 
+if TYPE_CHECKING:
+    from agents import Agent
 
 try:
     from agents import (
@@ -37,7 +39,7 @@ def _get_model(agent_config: AgentSchema):
 def load_openai_agent(
     main_agent: AgentSchema,
     managed_agents: Optional[list[AgentSchema]] = None,
-) -> Agent:
+) -> "Agent":
     """Loads an agent using `openai-agents`.
 
     Args:
