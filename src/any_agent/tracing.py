@@ -51,9 +51,7 @@ def get_tracer_provider(
 
     Args:
         project_name: Name of the project for tracing
-        output_dir: The directory where the telemetry output will be stored.
-            Only used if `json_tracer=True`.
-            Defaults to "telemetry_output".
+        output_dir: The directory where the telemetry output will be stored. Defaults to "telemetry_output".
 
     Returns:
         tracer_provider: The configured tracer provider

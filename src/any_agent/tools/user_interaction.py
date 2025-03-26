@@ -30,7 +30,7 @@ def ask_user_verification(query: str) -> str:
     return input(f"{query} => Type your answer here:")
 
 
-def send_slack_message(user: str, query: str) -> str:
+def send_console_message(user: str, query: str) -> str:
     """Sends the specified user a message via slack and returns their response.
     Args:
         query: The question to ask the user.
