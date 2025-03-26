@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
 def isinstance_without_import(instance, module, name):
     for cls in type(instance).mro():
+        print((cls.__module__, cls.__name__))
         if (cls.__module__, cls.__name__) == (module, name):
             return True
     return False
@@ -35,7 +36,7 @@ def run_agent(
         return run_langchain_agent(agent, query)
     if isinstance_without_import(agent, "agents.agent", "Agent"):
         return run_openai_agent(agent, query)
-    if isinstance_without_import(agent, "smolagents", "AgentType"):
+    if isinstance_without_import(agent, "smolagents.agents", "MultiStepAgent"):
         return run_smolagents_agent(agent, query)
     else:
         raise NotImplementedError(f"{agent} is not supported yet.")

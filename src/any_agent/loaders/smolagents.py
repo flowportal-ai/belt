@@ -7,7 +7,7 @@ from flow_portal.schema import AgentSchema
 from flow_portal.tools.wrappers import import_and_wrap_tools, wrap_tool_smolagents
 
 if TYPE_CHECKING:
-    from smolagents import AgentType
+    from smolagents.agents import MultiStepAgent
 
 try:
     import smolagents
@@ -36,7 +36,7 @@ def _get_model(agent_config: AgentSchema):
 def load_smolagents_agent(
     main_agent: AgentSchema,
     managed_agents: Optional[list[AgentSchema]] = None,
-) -> "AgentType":
+) -> "MultiStepAgent":
     if not smolagents_available:
         raise ImportError("You need to `pip install smolagents` to use this agent")
 
