@@ -18,7 +18,7 @@ def test_load_langchain_agent_default():
     tool_mock = MagicMock()
 
     with (
-        patch("flow_portal.loaders.langchain.create_tool_calling_agent", create_mock),
+        patch("flow_portal.loaders.langchain.create_react_agent", create_mock),
         patch("flow_portal.loaders.langchain.init_chat_model", model_mock),
         patch("langchain_core.tools.tool", tool_mock),
     ):
@@ -27,4 +27,5 @@ def test_load_langchain_agent_default():
         create_mock.assert_called_once_with(
             model=model_mock.return_value,
             tools=[tool_mock(search_web), tool_mock(visit_webpage)],
+            prompt=None,
         )
