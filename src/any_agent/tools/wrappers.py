@@ -6,6 +6,7 @@ from flow_portal.schema import AgentFramework, MCPTool
 from flow_portal.tools.mcp import (
     SmolagentsMCPToolsManager,
     OpenAIMCPToolsManager,
+    LangchainMCPToolsManager,
     MCPToolsManagerBase,
 )
 
@@ -76,6 +77,7 @@ def wrap_mcp_server(
     manager_map = {
         AgentFramework.OPENAI: OpenAIMCPToolsManager,
         AgentFramework.SMOLAGENTS: SmolagentsMCPToolsManager,
+        AgentFramework.LANGCHAIN: LangchainMCPToolsManager,
     }
 
     if agent_framework not in manager_map:
