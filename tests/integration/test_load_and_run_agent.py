@@ -14,8 +14,14 @@ from flow_portal import AgentFramework, AgentConfig, AnyAgent
 )
 def test_load_and_run_agent(framework):
     agent_framework = AgentFramework(framework)
+    kwargs = {}
+    if framework == "smolagents":
+        kwargs["agent_type"] = "ToolCallingAgent"
     agent_config = AgentConfig(
-        model_id="gpt-4o-mini", tools=["flow_portal.tools.search_web"]
+        model_id="gpt-4o-mini",
+        tools=["flow_portal.tools.search_web"],
+        instructions="Search the web to answer",
+        **kwargs,
     )
     agent = AnyAgent.create(agent_framework, agent_config)
     assert len(agent.tools) > 0

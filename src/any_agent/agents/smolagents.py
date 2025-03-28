@@ -74,40 +74,36 @@ class SmolagentsAgent(AnyAgent):
                 agent_type = getattr(
                     smolagents, managed_agent.agent_type or DEFAULT_AGENT_TYPE
                 )
-                kwargs = {}
-                if managed_agent.instructions:
-                    kwargs = {
-                        "prompt_template": {"system_prompt": managed_agent.instructions}
-                    }
                 managed_tools, managed_mcp_servers = import_and_wrap_tools(
                     managed_agent.tools, agent_framework=AgentFramework.SMOLAGENTS
                 )
                 tools.extend(self._merge_mcp_tools(managed_mcp_servers))
-                managed_agents_instanced.append(
-                    agent_type(
-                        name=managed_agent.name,
-                        model=self._get_model(managed_agent),
-                        tools=managed_tools,
-                        description=managed_agent.description
-                        or f"Use the agent: {managed_agent.name}",
-                        **kwargs,
-                    )
+                managed_agent_instance = agent_type(
+                    name=managed_agent.name,
+                    model=self._get_model(managed_agent),
+                    tools=managed_tools,
+                    description=managed_agent.description
+                    or f"Use the agent: {managed_agent.name}",
                 )
+                if managed_agent.instructions:
+                    managed_agent_instance.prompt_templates["system_prompt"] = (
+                        managed_agent.instructions
+                    )
+                managed_agents_instanced.append(managed_agent_instance)
 
         main_agent_type = getattr(
             smolagents, self.config.agent_type or DEFAULT_AGENT_TYPE
         )
-        kwargs = {}
-        if self.config.instructions:
-            kwargs = {"prompt_template": {"system_prompt": self.config.instructions}}
 
         self._agent: MultiStepAgent = main_agent_type(
             name=self.config.name,
             model=self._get_model(self.config),
             tools=tools,
             managed_agents=managed_agents_instanced,
-            **kwargs,
         )
+
+        if self.config.instructions:
+            self._agent.prompt_templates["system_prompt"] = self.config.instructions
 
     @logger.catch(reraise=True)
     def run(self, prompt: str) -> Any:
