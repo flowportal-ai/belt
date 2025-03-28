@@ -18,17 +18,22 @@ class AnyAgent(ABC):
         agent_config: AgentConfig,
         managed_agents: Optional[list[AgentConfig]] = None,
     ) -> "AnyAgent":
-        # Import here to avoid circular imports
-        from flow_portal.agents.langchain_agent import LangchainAgent
-        from flow_portal.agents.openai_agent import OpenAIAgent
-        from flow_portal.agents.smolagents_agent import SmolagentsAgent
-
         if agent_framework == AgentFramework.SMOLAGENTS:
+            from flow_portal.agents.smolagents import SmolagentsAgent
+
             return SmolagentsAgent(agent_config, managed_agents=managed_agents)
         elif agent_framework == AgentFramework.LANGCHAIN:
+            from flow_portal.agents.langchain import LangchainAgent
+
             return LangchainAgent(agent_config, managed_agents=managed_agents)
         elif agent_framework == AgentFramework.OPENAI:
+            from flow_portal.agents.openai import OpenAIAgent
+
             return OpenAIAgent(agent_config, managed_agents=managed_agents)
+        elif agent_framework == AgentFramework.LLAMAINDEX:
+            from flow_portal.agents.llama_index import LlamaIndexAgent
+
+            return LlamaIndexAgent(agent_config, managed_agents=managed_agents)
         else:
             raise ValueError(f"Unsupported agent framework: {agent_framework}")
 
