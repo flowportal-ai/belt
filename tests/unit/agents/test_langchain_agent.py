@@ -1,9 +1,6 @@
 from unittest.mock import patch, MagicMock
 
-from flow_portal.schema import AgentSchema
-from flow_portal.loaders.langchain import (
-    load_langchain_agent,
-)
+from flow_portal import AgentFramework, AgentSchema, AnyAgent
 from flow_portal.tools import (
     search_web,
     visit_webpage,
@@ -18,11 +15,11 @@ def test_load_langchain_agent_default():
     tool_mock = MagicMock()
 
     with (
-        patch("flow_portal.loaders.langchain.create_react_agent", create_mock),
-        patch("flow_portal.loaders.langchain.init_chat_model", model_mock),
+        patch("flow_portal.agents.langchain_agent.create_react_agent", create_mock),
+        patch("flow_portal.agents.langchain_agent.init_chat_model", model_mock),
         patch("langchain_core.tools.tool", tool_mock),
     ):
-        load_langchain_agent(AgentSchema(model_id="gpt-4o"))
+        AnyAgent.create(AgentFramework.LANGCHAIN, AgentSchema(model_id="gpt-4o"))
         model_mock.assert_called_once_with("gpt-4o")
         create_mock.assert_called_once_with(
             model=model_mock.return_value,

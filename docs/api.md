@@ -2,8 +2,6 @@
 
 ::: flow_portal.schema.AgentSchema
 
-::: flow_portal.loaders
-
-::: flow_portal.runners
+::: flow_portal.agents
 
 ::: flow_portal.tools
