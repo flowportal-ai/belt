@@ -14,8 +14,10 @@ from flow_portal import AgentFramework, AgentConfig, AnyAgent
 )
 def test_load_and_run_agent(framework):
     agent_framework = AgentFramework(framework)
-    agent_config = AgentConfig(model_id="gpt-4o-mini")
+    agent_config = AgentConfig(
+        model_id="gpt-4o-mini", tools=["flow_portal.tools.search_web"]
+    )
     agent = AnyAgent.create(agent_framework, agent_config)
-    assert agent.agent.tools
+    assert len(agent.tools) > 0
     result = agent.run("What day is today?")
     assert result
