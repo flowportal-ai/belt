@@ -1,4 +1,4 @@
-from .schema import AgentSchema, AgentFramework
+from .config import AgentConfig, AgentFramework
 from .agents import AnyAgent
 
-__all__ = ["AnyAgent", "AgentSchema", "AgentFramework"]
+__all__ = ["AnyAgent", "AgentConfig", "AgentFramework"]

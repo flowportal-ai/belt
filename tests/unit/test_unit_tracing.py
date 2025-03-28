@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 
 from flow_portal.tracing import get_tracer_provider, setup_tracing
-from flow_portal.schema import AgentFramework
+from flow_portal.config import AgentFramework
 
 
 def test_get_tracer_provider(tmp_path):

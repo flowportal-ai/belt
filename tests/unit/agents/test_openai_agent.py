@@ -2,7 +2,7 @@ import os
 import pytest
 from unittest.mock import patch, MagicMock
 
-from flow_portal import AgentFramework, AgentSchema, AnyAgent
+from flow_portal import AgentFramework, AgentConfig, AnyAgent
 from flow_portal.tools import (
     show_final_answer,
     ask_user_verification,
@@ -19,7 +19,7 @@ def test_load_openai_agent_default():
         patch("flow_portal.agents.openai_agent.Agent", mock_agent),
         patch("agents.function_tool", mock_function_tool),
     ):
-        AnyAgent.create(AgentFramework.OPENAI, AgentSchema(model_id="gpt-4o"))
+        AnyAgent.create(AgentFramework.OPENAI, AgentConfig(model_id="gpt-4o"))
         mock_agent.assert_called_once_with(
             name="default-name",
             model="gpt-4o",
@@ -45,7 +45,7 @@ def test_openai_agent_with_api_base_and_api_key_var():
     ):
         AnyAgent.create(
             AgentFramework.OPENAI,
-            AgentSchema(model_id="gpt-4o", api_base="FOO", api_key_var="TEST_API_KEY"),
+            AgentConfig(model_id="gpt-4o", api_base="FOO", api_key_var="TEST_API_KEY"),
         )
         async_openai_mock.assert_called_once_with(
             api_key="test-key-12345",
@@ -59,7 +59,7 @@ def test_openai_environment_error():
         with pytest.raises(KeyError, match="MISSING_KEY"):
             AnyAgent.create(
                 AgentFramework.OPENAI,
-                AgentSchema(
+                AgentConfig(
                     model_id="gpt-4o", api_base="FOO", api_key_var="MISSING_KEY"
                 ),
             )
@@ -84,7 +84,7 @@ def test_load_openai_agent_with_mcp_server():
 
         AnyAgent.create(
             AgentFramework.OPENAI,
-            AgentSchema(
+            AgentConfig(
                 model_id="gpt-4o",
                 tools=[
                     "some.mcp.server"
@@ -111,16 +111,16 @@ def test_load_openai_multiagent():
         patch("flow_portal.agents.openai_agent.Agent", mock_agent),
         patch("agents.function_tool", mock_function_tool),
     ):
-        main_agent = AgentSchema(
+        main_agent = AgentConfig(
             model_id="o3-mini",
         )
         managed_agents = [
-            AgentSchema(
+            AgentConfig(
                 model_id="gpt-4o-mini",
                 name="user-verification-agent",
                 tools=["flow_portal.tools.ask_user_verification"],
             ),
-            AgentSchema(
+            AgentConfig(
                 model_id="gpt-4o",
                 name="search-web-agent",
                 tools=[
@@ -128,7 +128,7 @@ def test_load_openai_multiagent():
                     "flow_portal.tools.visit_webpage",
                 ],
             ),
-            AgentSchema(
+            AgentConfig(
                 model_id="gpt-4o-mini",
                 name="communication-agent",
                 tools=["flow_portal.tools.show_final_answer"],

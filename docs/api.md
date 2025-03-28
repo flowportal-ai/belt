@@ -1,6 +1,8 @@
 # API Reference
 
-::: flow_portal.schema.AgentSchema
+::: flow_portal.config.AgentFramework
+
+::: flow_portal.config.AgentConfig
 
 ::: flow_portal.agents
 

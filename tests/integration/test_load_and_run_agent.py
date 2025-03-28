@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from flow_portal import AgentFramework, AgentSchema, AnyAgent
+from flow_portal import AgentFramework, AgentConfig, AnyAgent
 
 
 @pytest.mark.parametrize("framework", ("langchain", "openai", "smolagents"))
@@ -12,7 +12,7 @@ from flow_portal import AgentFramework, AgentSchema, AnyAgent
 )
 def test_load_and_run_agent(framework):
     agent_framework = AgentFramework(framework)
-    agent_config = AgentSchema(model_id="gpt-4o-mini")
+    agent_config = AgentConfig(model_id="gpt-4o-mini")
     agent = AnyAgent.create(agent_framework, agent_config)
     result = agent.run("What day is today?")
     assert result

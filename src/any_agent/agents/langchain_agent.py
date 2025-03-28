@@ -2,7 +2,7 @@ from typing import Any, Optional
 
 from loguru import logger
 
-from flow_portal.schema import AgentFramework, AgentSchema
+from flow_portal.config import AgentFramework, AgentConfig
 from flow_portal.tools.wrappers import import_and_wrap_tools
 from .flow_portal import AnyAgent
 
@@ -19,7 +19,7 @@ class LangchainAgent(AnyAgent):
     """LangChain agent implementation that handles both loading and running."""
 
     def __init__(
-        self, config: AgentSchema, managed_agents: Optional[list[AgentSchema]] = None
+        self, config: AgentConfig, managed_agents: Optional[list[AgentConfig]] = None
     ):
         self.managed_agents = managed_agents
         self.config = config

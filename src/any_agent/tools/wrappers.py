@@ -2,7 +2,7 @@ import inspect
 import importlib
 from collections.abc import Callable
 
-from flow_portal.schema import AgentFramework, MCPTool
+from flow_portal.config import AgentFramework, MCPTool
 from flow_portal.tools.mcp import (
     SmolagentsMCPToolsManager,
     OpenAIMCPToolsManager,

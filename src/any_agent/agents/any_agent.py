@@ -1,7 +1,7 @@
 from typing import Any, Optional
 from abc import ABC, abstractmethod
 
-from flow_portal.schema import AgentFramework, AgentSchema
+from flow_portal.config import AgentFramework, AgentConfig
 
 
 class AnyAgent(ABC):
@@ -15,8 +15,8 @@ class AnyAgent(ABC):
     def create(
         cls,
         agent_framework: AgentFramework,
-        agent_config: AgentSchema,
-        managed_agents: Optional[list[AgentSchema]] = None,
+        agent_config: AgentConfig,
+        managed_agents: Optional[list[AgentConfig]] = None,
     ) -> "AnyAgent":
         # Import here to avoid circular imports
         from flow_portal.agents.langchain_agent import LangchainAgent
