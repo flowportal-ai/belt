@@ -18,7 +18,7 @@ def test_load_llama_index_agent_default():
     from llama_index.core.tools import FunctionTool
 
     with (
-        patch("flow_portal.agents.llama_index.ReActAgent", create_mock),
+        patch("flow_portal.frameworks.llama_index.ReActAgent", create_mock),
         patch("llama_index.llms.openai.OpenAI", model_mock),
         patch.object(FunctionTool, "from_defaults", tool_mock),
     ):
@@ -32,6 +32,6 @@ def test_load_llama_index_agent_default():
 
 
 def test_load_llama_index_agent_missing():
-    with patch("flow_portal.agents.llama_index.llama_index_available", False):
+    with patch("flow_portal.frameworks.llama_index.llama_index_available", False):
         with pytest.raises(ImportError, match="You need to `pip install llama-index`"):
             AnyAgent.create(AgentFramework.LLAMAINDEX, AgentConfig(model_id="gpt-4o"))

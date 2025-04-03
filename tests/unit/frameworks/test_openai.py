@@ -16,7 +16,7 @@ def test_load_openai_default():
     mock_function_tool = MagicMock()
 
     with (
-        patch("flow_portal.agents.openai.Agent", mock_agent),
+        patch("flow_portal.frameworks.openai.Agent", mock_agent),
         patch("agents.function_tool", mock_function_tool),
     ):
         AnyAgent.create(AgentFramework.OPENAI, AgentConfig(model_id="gpt-4o"))
@@ -35,10 +35,10 @@ def test_openai_with_api_base_and_api_key_var():
     async_openai_mock = MagicMock()
     openai_chat_completions_model = MagicMock()
     with (
-        patch("flow_portal.agents.openai.Agent", mock_agent),
-        patch("flow_portal.agents.openai.AsyncOpenAI", async_openai_mock),
+        patch("flow_portal.frameworks.openai.Agent", mock_agent),
+        patch("flow_portal.frameworks.openai.AsyncOpenAI", async_openai_mock),
         patch(
-            "flow_portal.agents.openai.OpenAIChatCompletionsModel",
+            "flow_portal.frameworks.openai.OpenAIChatCompletionsModel",
             openai_chat_completions_model,
         ),
         patch.dict(os.environ, {"TEST_API_KEY": "test-key-12345"}),
@@ -76,9 +76,9 @@ def test_load_openai_with_mcp_server():
     mock_mcp_server.server = MagicMock()
 
     with (
-        patch("flow_portal.agents.openai.Agent", mock_agent),
+        patch("flow_portal.frameworks.openai.Agent", mock_agent),
         patch("agents.function_tool", mock_function_tool),
-        patch("flow_portal.agents.openai.import_and_wrap_tools") as mock_wrap_tools,
+        patch("flow_portal.frameworks.openai.import_and_wrap_tools") as mock_wrap_tools,
     ):
         # Setup the mock to return tools and MCP servers
         mock_wrap_tools.return_value = (
@@ -112,7 +112,7 @@ def test_load_openai_multiagent():
     mock_function_tool = MagicMock()
 
     with (
-        patch("flow_portal.agents.openai.Agent", mock_agent),
+        patch("flow_portal.frameworks.openai.Agent", mock_agent),
         patch("agents.function_tool", mock_function_tool),
     ):
         main_agent = AgentConfig(
@@ -183,7 +183,7 @@ def test_load_openai_multiagent():
 
 
 def test_load_openai_agent_missing():
-    with patch("flow_portal.agents.openai.agents_available", False):
+    with patch("flow_portal.frameworks.openai.agents_available", False):
         with pytest.raises(
             ImportError, match="You need to `pip install openai-agents`"
         ):

@@ -1,4 +1,4 @@
 from .config import AgentConfig, AgentFramework
-from .agents import AnyAgent
+from .frameworks import AnyAgent
 
 __all__ = ["AnyAgent", "AgentConfig", "AgentFramework"]
