@@ -6,4 +6,6 @@
 
 ::: flow_portal.agents
 
+::: flow_portal.instructions
+
 ::: flow_portal.tools
