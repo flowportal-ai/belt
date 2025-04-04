@@ -7,9 +7,10 @@ standardized [OpenTelemetry](https://opentelemetry.io/) traces for any of the su
 
 ```py
 from flow_portal import AgentConfig, AgentFramework, AnyAgent
-from flow_portal.tracing import get_trace_provider, setup_tracing
+from flow_portal.tracing import setup_tracing
 
 framework = AgentFramework("openai")
+
 agent = AnyAgent(
         main_agent=AgentConfig(
         model_id="gpt-4o",
@@ -17,6 +18,5 @@ agent = AnyAgent(
     )
 )
 
-trace_provider = get_trace_provider(project_name="example", agent_framework=framework)
-setup_tracing(trace_provider, framework)
+setup_tracing(framework)
 ```
