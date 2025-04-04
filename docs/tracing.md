@@ -11,7 +11,7 @@ from flow_portal.tracing import setup_tracing
 
 framework = AgentFramework("openai")
 
-agent = AnyAgent(
+agent = AnyAgent.create(
         main_agent=AgentConfig(
         model_id="gpt-4o",
         tools=["flow_portal.tools.search_web", "flow_portal.tools.visit_webpage"]
