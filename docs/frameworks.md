@@ -20,7 +20,7 @@ Here you can find the frameworks currently supported in `any-agent`, along with 
             model_id="gpt-4o-mini"
         )
     )
-    agent.run("Which is the best Agent Framework?")
+    agent.run("Which Agent Framework is the best??")
     ```
 
 === "🗂️ LlamaIndex 🦙"
@@ -34,7 +34,7 @@ Here you can find the frameworks currently supported in `any-agent`, along with 
             model_id="gpt-4o-mini"
         )
     )
-    agent.run("Which is the best Agent Framework?")
+    agent.run("Which Agent Framework is the best??")
     ```
 
 === "OpenAI Agents"
@@ -48,7 +48,7 @@ Here you can find the frameworks currently supported in `any-agent`, along with 
             model_id="gpt-4o-mini"
         )
     )
-    agent.run("Which is the best Agent Framework?")
+    agent.run("Which Agent Framework is the best??")
     ```
 
 === "🤗 smolagents"
@@ -62,5 +62,5 @@ Here you can find the frameworks currently supported in `any-agent`, along with 
             model_id="gpt-4o-mini"
         )
     )
-    agent.run("Which is the best Agent Framework?")
+    agent.run("Which Agent Framework is the best??")
     ```

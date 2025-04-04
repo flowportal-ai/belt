@@ -46,7 +46,7 @@ Create and run the agent:
 ```py
 agent = AnyAgent.create(framework, main_agent)
 
-agent.run("Which is the best Agent Framework?")
+agent.run("Which Agent Framework is the best??")
 ```
 
 ### Multi-Agent
@@ -94,5 +94,5 @@ You can then create and run the multi-agent:
 ```py
 multi_agent = AnyAgent.create(framework, main_agent, managed_agents)
 
-agent.run("Which is the best Agent Framework?")
+agent.run("Which Agent Framework is the best??")
 ```
