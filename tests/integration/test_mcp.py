@@ -13,7 +13,7 @@ from flow_portal import AgentFramework, AgentConfig, AnyAgent
     "OPENAI_API_KEY" not in os.environ,
     reason="Integration tests require `OPENAI_API_KEY` env var",
 )
-def test_load_and_run_agent(framework):
+def test_mcp(framework):
     agent_framework = AgentFramework(framework)
     kwargs = {}
 
