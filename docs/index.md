@@ -4,11 +4,11 @@
 
 !!! warning
 
-    Compared to traditional code-defined workflows, agent frameworks introduce complexety and
+    Compared to traditional code-defined workflows, agent frameworks introduce complexity and
     demand much more computational power.
 
     Before jumping to use one, carefully consider and evaluate how much value you
-    would get compared to manually defining a sequence of tools and LLMs calls.
+    would get compared to manually defining a sequence of tools and LLM calls.
 
 ## Quickstart
 
@@ -18,6 +18,11 @@ To define any agent system you will always use the same imports:
 from flow_portal import AgentConfig, AgentFramework, AnyAgent
 ```
 
+If you plan on using an agent that requires access to an external service (e.g. OpenAI, Mistral, DeepSeek, etc), you'll need to set any relevant environment variables, e.g.
+
+```bash
+export OPENAI_API_KEY=your_api_key_here
+export DEEPSEEK_API_KEY=your_api_key_here
 ### Single Agent
 
 Configure the agent:
@@ -29,7 +34,7 @@ main_agent = AgentConfig(
 )
 ```
 
-Chose one of the available frameworks:
+Choose one of the available frameworks:
 
 ```py
 from random import choice
@@ -94,5 +99,5 @@ You can then create and run the multi-agent:
 ```py
 multi_agent = AnyAgent.create(framework, main_agent, managed_agents)
 
-agent.run("Which Agent Framework is the best??")
+multi_agent.run("Which Agent Framework is the best??")
 ```
