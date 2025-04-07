@@ -18,11 +18,15 @@ To define any agent system you will always use the same imports:
 from flow_portal import AgentConfig, AgentFramework, AnyAgent
 ```
 
-If you plan on using an agent that requires access to an external service (e.g. OpenAI, Mistral, DeepSeek, etc), you'll need to set any relevant environment variables, e.g.
+!!! note
 
-```bash
-export OPENAI_API_KEY=your_api_key_here
-export DEEPSEEK_API_KEY=your_api_key_here
+    If you plan on using an agent that requires access to an external service (e.g. OpenAI, Mistral, DeepSeek, etc), you'll need to set any relevant environment variables, e.g.
+
+    ```bash
+    export OPENAI_API_KEY=your_api_key_here
+    export DEEPSEEK_API_KEY=your_api_key_here
+    ```
+
 ### Single Agent
 
 Configure the agent:
