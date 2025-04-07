@@ -25,5 +25,5 @@ def test_load_and_run_agent(framework):
     )
     agent = AnyAgent.create(agent_framework, agent_config)
     assert len(agent.tools) > 0
-    result = agent.run("What day is today?")
+    result = agent.run("Which agent framework is the best?")
     assert result
