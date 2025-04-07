@@ -17,8 +17,8 @@ except ImportError:
     mcp_available = False
 
 
-# Global registry to keep manager instances alive
-_mcp_managers = {}
+# Global registry to keep Smolagents MCP manager instances alive
+_smolagents_mcp_managers = {}
 
 
 class MCPToolsManagerBase(ABC):
@@ -27,22 +27,12 @@ class MCPToolsManagerBase(ABC):
     def __init__(self, mcp_tool: MCPTool):
         if not mcp_available:
             raise ImportError("You need to `pip install mcp` to use this tools.")
-        # Generate a unique identifier for this manager instance
-        self.id = id(self)
 
         # Store the original tool configuration
         self.mcp_tool = mcp_tool
 
         # Initialize tools list (to be populated by subclasses)
         self.tools = []
-
-        # Register self in the global registry to prevent garbage collection
-        _mcp_managers[self.id] = self
-
-    def __del__(self):
-        # Remove from registry when deleted
-        if self.id in _mcp_managers:
-            del _mcp_managers[self.id]
 
     @abstractmethod
     def setup_tools(self):
@@ -60,8 +50,15 @@ class SmolagentsMCPToolsManager(MCPToolsManagerBase):
 
     def __init__(self, mcp_tool: MCPTool):
         super().__init__(mcp_tool)
+        # Generate a unique identifier for this manager instance
+        self.id = id(self)
         self.context = None
         self.tool_collection = None
+
+        # Register self in the global registry to prevent garbage collection
+        # (only needed for Smolagents implementation)
+        _smolagents_mcp_managers[self.id] = self
+
         self.setup_tools()
 
     def setup_tools(self):
@@ -83,15 +80,22 @@ class SmolagentsMCPToolsManager(MCPToolsManagerBase):
 
         # Only add the tools listed in mcp_tool['tools'] if specified
         requested_tools = self.mcp_tool.tools
-        filtered_tools = [tool for tool in tools if tool.name in requested_tools]
-        if len(filtered_tools) != len(requested_tools):
-            tool_names = [tool.name for tool in filtered_tools]
-            raise ValueError(
-                dedent(f"""Could not find all requested tools in the MCP server:
-                            Requested: {requested_tools}
-                            Set:   {tool_names}""")
+        if requested_tools:
+            filtered_tools = [tool for tool in tools if tool.name in requested_tools]
+            if len(filtered_tools) != len(requested_tools):
+                tool_names = [tool.name for tool in filtered_tools]
+                raise ValueError(
+                    dedent(f"""Could not find all requested tools in the MCP server:
+                                Requested: {requested_tools}
+                                Set:   {tool_names}""")
+                )
+            self.tools = filtered_tools
+        else:
+            logger.info(
+                "No specific tools requested for MCP server, using all available tools:"
             )
-        self.tools = filtered_tools
+            logger.info(f"Tools available: {tools}")
+            self.tools = tools
 
     def cleanup(self):
         # Exit the context when cleanup is called
@@ -104,7 +108,9 @@ class SmolagentsMCPToolsManager(MCPToolsManagerBase):
 
     def __del__(self):
         self.cleanup()
-        super().__del__()
+        # Remove from registry when deleted (Smolagents-specific)
+        if hasattr(self, "id") and self.id in _smolagents_mcp_managers:
+            del _smolagents_mcp_managers[self.id]
 
 
 class OpenAIMCPToolsManager(MCPToolsManagerBase):
@@ -127,8 +133,21 @@ class OpenAIMCPToolsManager(MCPToolsManagerBase):
                 "args": self.mcp_tool.args,
             },
         )
+        try:
+            # Try to get the existing event loop
+            self.loop = asyncio.get_event_loop()
+            # Check if it's running
+            is_running = self.loop.is_running()
+        except RuntimeError:
+            # No event loop exists in this thread
+            is_running = False
+            self.loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(self.loop)
 
-        self.loop = asyncio.get_event_loop()
+        # If we got an existing event loop but it's not running, we might need a new one
+        if not is_running:
+            self.loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(self.loop)
 
         self.loop.run_until_complete(self.server.__aenter__())
         # Get tools from the server
@@ -142,7 +161,6 @@ class OpenAIMCPToolsManager(MCPToolsManagerBase):
 
     def __del__(self):
         self.cleanup()
-        super().__del__()
 
 
 class LangchainMCPToolsManager(MCPToolsManagerBase):
@@ -205,7 +223,6 @@ class LangchainMCPToolsManager(MCPToolsManagerBase):
 
     def __del__(self):
         self.cleanup()
-        super().__del__()
 
     # Consider adding a context manager interface
     async def __aenter__(self):
