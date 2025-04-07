@@ -4,6 +4,15 @@
 
 In the first case, the import should point to a Python string.
 
+!!! warning
+
+    Some frameworks use complex default instructions for specific agent implementations.
+    Completely replacing those instructions might result in unexpected behavior.
+
+    In those cases, you might want to instead copy-paste and **extend** the default
+    instructions.
+    For example, check the [`CodeAgent` default instructions](https://github.com/huggingface/smolagents/blob/main/src/smolagents/prompts/code_agent.yaml) in `smolagents`.
+
 === "Import"
 
     For a variable that you would import like:
