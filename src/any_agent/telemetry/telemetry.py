@@ -74,7 +74,7 @@ class TelemetryProcessor(ABC):
         pass
 
     @abstractmethod
-    def extract_interaction(self, span: Dict[str, Any]) -> Dict[str, Any]:
+    def extract_interaction(self, span: Dict[str, Any]) -> tuple[str, dict[str, Any]]:
         """Extract interaction details from a span."""
         pass
 
