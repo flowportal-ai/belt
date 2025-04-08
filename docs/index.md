@@ -12,6 +12,10 @@
 
 ## Quickstart
 
+```bash
+pip install any-agent
+```
+
 To define any agent system you will always use the same imports:
 
 ```py
