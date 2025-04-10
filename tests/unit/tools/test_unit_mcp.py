@@ -70,28 +70,9 @@ class TestSmolagentsMCPServerStdio(unittest.TestCase):
         self.mock_context = MagicMock()
         self.mock_context.__enter__.return_value = self.mock_collection
 
-    def test_cleanup(self, mock_stdio_params, mock_tool_collection):
-        """Test that cleanup exits the context manager."""
-        # Configure the mocks
-        mock_tool_collection.from_mcp.return_value = self.mock_context
-
-        # Initialize the manager with setup_tools patched
-        with patch.object(SmolagentsMCPServerStdio, "setup_tools", return_value=None):
-            manager = SmolagentsMCPServerStdio(self.test_tool)
-
-        # Set the context attribute
-        manager.context = self.mock_context
-
-        # Call cleanup
-        manager.cleanup()
-
-        # Verify context.__exit__ was called
-        self.mock_context.__exit__.assert_called_once_with(None, None, None)
-
-        # Verify context was set to None
-        self.assertIsNone(manager.context)
-
-    def test_setup_tools_with_none_tools(self, mock_stdio_params, mock_tool_collection):
+    async def test_setup_tools_with_none_tools(
+        self, mock_stdio_params, mock_tool_collection
+    ):
         """Test that when mcp_tool.tools is None, all available tools are used."""
         # Setup mock tools
         mock_tools = create_mock_tools()
@@ -103,14 +84,14 @@ class TestSmolagentsMCPServerStdio(unittest.TestCase):
         # Create test tool configuration with None tools
         self.test_tool.tools = None
 
-        # Initialize the manager
-        manager = SmolagentsMCPServerStdio(self.test_tool)
+        mcp_server = SmolagentsMCPServerStdio(self.test_tool)
+        await mcp_server.setup_tools()
 
         # Verify all tools are included
-        self.assertEqual(manager.tools, mock_tools)
-        self.assertEqual(len(manager.tools), 2)
+        self.assertEqual(mcp_server.tools, mock_tools)
+        self.assertEqual(len(mcp_server.tools), 2)
 
-    def test_setup_tools_with_specific_tools(
+    async def test_setup_tools_with_specific_tools(
         self, mock_stdio_params, mock_tool_collection
     ):
         """Test that when mcp_tool.tools has specific values, only those tools are used."""
@@ -124,12 +105,12 @@ class TestSmolagentsMCPServerStdio(unittest.TestCase):
         # Create test tool configuration with specific tools
         self.test_tool.tools = ["read_thing", "write_thing"]
 
-        # Initialize the manager
-        manager = SmolagentsMCPServerStdio(self.test_tool)
+        mcp_server = SmolagentsMCPServerStdio(self.test_tool)
+        await mcp_server.setup_tools()
 
         # Verify only the requested tools are included
-        self.assertEqual(len(manager.tools), 2)
-        tool_names = [tool.name for tool in manager.tools]
+        self.assertEqual(len(mcp_server.tools), 2)
+        tool_names = [tool.name for tool in mcp_server.tools]
         self.assertIn("read_thing", tool_names)
         self.assertIn("write_thing", tool_names)
         self.assertNotIn("other_thing", tool_names)

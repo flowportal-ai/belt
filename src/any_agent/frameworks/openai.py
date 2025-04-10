@@ -31,7 +31,6 @@ class OpenAIAgent(AnyAgent):
         self.managed_agents = managed_agents
         self.config = config
         self._agent = None
-        self._load_agent()
 
     def _get_model(self, agent_config: AgentConfig):
         """Get the model configuration for an OpenAI agent."""
@@ -50,7 +49,7 @@ class OpenAIAgent(AnyAgent):
         return agent_config.model_id
 
     @logger.catch(reraise=True)
-    def _load_agent(self) -> None:
+    async def _load_agent(self) -> None:
         """Load the OpenAI agent with the given configuration."""
         if not agents_available:
             raise ImportError(
@@ -62,14 +61,14 @@ class OpenAIAgent(AnyAgent):
                 "flow_portal.tools.search_web",
                 "flow_portal.tools.visit_webpage",
             ]
-        tools, mcp_servers = import_and_wrap_tools(
+        tools, mcp_servers = await import_and_wrap_tools(
             self.config.tools, agent_framework=AgentFramework.OPENAI
         )
 
         handoffs = []
         if self.managed_agents:
             for managed_agent in self.managed_agents:
-                managed_tools, managed_mcp_servers = import_and_wrap_tools(
+                managed_tools, managed_mcp_servers = await import_and_wrap_tools(
                     managed_agent.tools, agent_framework=AgentFramework.OPENAI
                 )
                 kwargs = {}
@@ -113,6 +112,7 @@ class OpenAIAgent(AnyAgent):
     @logger.catch(reraise=True)
     async def run_async(self, prompt: str) -> Any:
         """Run the OpenAI agent with the given prompt asynchronously."""
+        await self.ensure_loaded()
         result = await Runner.run(self._agent, prompt, max_turns=OPENAI_MAX_TURNS)
         return result
 

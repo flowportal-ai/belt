@@ -32,7 +32,6 @@ class SmolagentsAgent(AnyAgent):
         self.managed_agents = managed_agents
         self.config = config
         self._agent = None
-        self._load_agent()
 
     def _get_model(self, agent_config: AgentConfig):
         """Get the model configuration for a smolagents agent."""
@@ -53,7 +52,7 @@ class SmolagentsAgent(AnyAgent):
         return tools
 
     @logger.catch(reraise=True)
-    def _load_agent(self) -> None:
+    async def _load_agent(self) -> None:
         """Load the Smolagents agent with the given configuration."""
 
         if not self.managed_agents and not self.config.tools:
@@ -62,7 +61,7 @@ class SmolagentsAgent(AnyAgent):
                 "flow_portal.tools.visit_webpage",
             ]
 
-        tools, mcp_servers = import_and_wrap_tools(
+        tools, mcp_servers = await import_and_wrap_tools(
             self.config.tools, agent_framework=AgentFramework.SMOLAGENTS
         )
         tools.extend(self._merge_mcp_tools(mcp_servers))
@@ -73,7 +72,7 @@ class SmolagentsAgent(AnyAgent):
                 agent_type = getattr(
                     smolagents, managed_agent.agent_type or DEFAULT_AGENT_TYPE
                 )
-                managed_tools, managed_mcp_servers = import_and_wrap_tools(
+                managed_tools, managed_mcp_servers = await import_and_wrap_tools(
                     managed_agent.tools, agent_framework=AgentFramework.SMOLAGENTS
                 )
                 tools.extend(self._merge_mcp_tools(managed_mcp_servers))
@@ -110,6 +109,7 @@ class SmolagentsAgent(AnyAgent):
     @logger.catch(reraise=True)
     async def run_async(self, prompt: str) -> Any:
         """Run the Smolagents agent with the given prompt."""
+        await self.ensure_loaded()
         result = self._agent.run(prompt)
         return result
 

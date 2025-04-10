@@ -4,10 +4,10 @@ import pytest
 
 from flow_portal import AgentFramework, AgentConfig, AnyAgent
 
+frameworks = [item for item in AgentFramework]
 
-@pytest.mark.parametrize(
-    "framework", ("google", "langchain", "openai", "smolagents", "llama_index")
-)
+
+@pytest.mark.parametrize("framework", frameworks)
 @pytest.mark.skipif(
     "OPENAI_API_KEY" not in os.environ,
     reason="Integration tests require `OPENAI_API_KEY` env var",

@@ -10,7 +10,7 @@ from flow_portal.tools import (
 )
 
 
-def test_load_google_default():
+async def test_load_google_default():
     from google.adk.tools import FunctionTool
 
     mock_agent = MagicMock()
@@ -26,7 +26,8 @@ def test_load_google_default():
         patch("flow_portal.frameworks.google.LiteLlm", mock_model),
         patch("google.adk.tools.FunctionTool", MockedFunctionTool),
     ):
-        AnyAgent.create(AgentFramework.GOOGLE, AgentConfig(model_id="gpt-4o"))
+        agent = AnyAgent.create(AgentFramework.GOOGLE, AgentConfig(model_id="gpt-4o"))
+        await agent.ensure_loaded()
         mock_agent.assert_called_once_with(
             name="flow_portal",
             instruction="",
@@ -37,7 +38,7 @@ def test_load_google_default():
         )
 
 
-def test_load_google_multiagent():
+async def test_load_google_multiagent():
     from google.adk.tools import FunctionTool
 
     mock_agent = MagicMock()
@@ -55,7 +56,7 @@ def test_load_google_multiagent():
         patch("flow_portal.frameworks.google.AgentTool", mock_agent_tool),
         patch("google.adk.tools.FunctionTool", MockedFunctionTool),
     ):
-        AnyAgent.create(
+        agent = AnyAgent.create(
             AgentFramework.GOOGLE,
             AgentConfig(model_id="gpt-4o"),
             managed_agents=[
@@ -75,6 +76,7 @@ def test_load_google_multiagent():
                 ),
             ],
         )
+        await agent.ensure_loaded()
         mock_agent.assert_any_call(
             model=mock_model(model="gpt-4o-mini"),
             instruction="",
