@@ -1,6 +1,6 @@
 from typing import Any, Optional, List
 from abc import ABC, abstractmethod
-
+import asyncio
 from flow_portal.config import AgentFramework, AgentConfig
 
 
@@ -46,9 +46,13 @@ class AnyAgent(ABC):
         """Load the agent instance."""
         pass
 
-    @abstractmethod
     def run(self, prompt: str) -> Any:
         """Run the agent with the given prompt."""
+        return asyncio.get_event_loop().run_until_complete(self.run_async(prompt))
+
+    @abstractmethod
+    async def run_async(self, prompt: str) -> Any:
+        """Run the agent asynchronously with the given prompt."""
         pass
 
     @property
