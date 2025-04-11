@@ -4,9 +4,7 @@ from flow_portal.evaluation.evaluators.LLMEvaluator import LLMEvaluator
 from flow_portal.evaluation.evaluators.schemas import EvaluationResult
 from flow_portal.telemetry import TelemetryProcessor
 from flow_portal.evaluation.test_case import CheckpointCriteria
-from flow_portal.evaluation.logging import get_logger
-
-logger = get_logger()
+from flow_portal.logging import logger
 
 
 class CheckpointEvaluator(LLMEvaluator):

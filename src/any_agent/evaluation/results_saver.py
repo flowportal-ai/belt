@@ -2,10 +2,9 @@ import os
 import pandas as pd
 
 from flow_portal.evaluation.test_case import TestCase
-from flow_portal.evaluation.logging import get_logger
+from flow_portal.logging import logger
 
 # Use the shared logger
-logger = get_logger()
 
 
 def save_evaluation_results(
