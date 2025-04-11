@@ -1,12 +1,11 @@
 from typing import Optional, Any, List
 from uuid import uuid4
 
-from loguru import logger
-
 from flow_portal.config import AgentFramework, AgentConfig
+from flow_portal.frameworks.flow_portal import AnyAgent
 from flow_portal.instructions import get_instructions
+from flow_portal.logging import logger
 from flow_portal.tools.wrappers import import_and_wrap_tools
-from .flow_portal import AnyAgent
 
 try:
     from google.adk.agents import Agent
@@ -39,7 +38,6 @@ class GoogleAgent(AnyAgent):
         """Get the model configuration for a Google agent."""
         return LiteLlm(model=agent_config.model_id, **agent_config.model_args or {})
 
-    @logger.catch(reraise=True)
     async def _load_agent(self) -> None:
         """Load the Google agent with the given configuration."""
         if not self.managed_agents and not self.config.tools:
@@ -88,7 +86,6 @@ class GoogleAgent(AnyAgent):
             output_key="response",
         )
 
-    @logger.catch(reraise=True)
     async def run_async(
         self, prompt: str, user_id: str | None = None, session_id: str | None = None
     ) -> Any:

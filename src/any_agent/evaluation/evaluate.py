@@ -7,26 +7,21 @@ from flow_portal.evaluation.evaluators import (
     QuestionAnsweringSquadEvaluator,
 )
 from flow_portal.evaluation.results_saver import save_evaluation_results
-from flow_portal.evaluation.logging import get_logger
 from flow_portal.evaluation.test_case import TestCase
+from flow_portal.logging import logger
 from flow_portal.telemetry.telemetry import TelemetryProcessor
-
-logger = get_logger()
 
 
 def evaluate_telemetry(test_case: TestCase, telemetry_path: str) -> bool:
-    # load the json file
     with open(telemetry_path, "r") as f:
         telemetry: List[Dict[str, Any]] = json.loads(f.read())
     logger.info(f"Telemetry loaded from {telemetry_path}")
 
     agent_framework = TelemetryProcessor.determine_agent_framework(telemetry)
 
-    # Extract the final answer from the telemetry
     processor = TelemetryProcessor.create(agent_framework)
     hypothesis_answer = processor.extract_hypothesis_answer(trace=telemetry)
 
-    # Checkpoint evaluation
     checkpoint_evaluator = CheckpointEvaluator(model=test_case.llm_judge)
     checkpoint_results = checkpoint_evaluator.evaluate(
         telemetry=telemetry,
@@ -34,7 +29,6 @@ def evaluate_telemetry(test_case: TestCase, telemetry_path: str) -> bool:
         processor=processor,
     )
 
-    # Hypothesis answer evaluation
     hypothesis_evaluator = HypothesisEvaluator(model=test_case.llm_judge)
     hypothesis_answer_results = hypothesis_evaluator.evaluate(
         hypothesis_final_answer=hypothesis_answer,
@@ -42,7 +36,6 @@ def evaluate_telemetry(test_case: TestCase, telemetry_path: str) -> bool:
         ground_truth_checkpoints=test_case.final_answer_criteria,
     )
 
-    # Direct answer evaluation (new)
     if test_case.ground_truth:
         direct_evaluator = QuestionAnsweringSquadEvaluator()
         direct_results = direct_evaluator.evaluate(
@@ -51,11 +44,11 @@ def evaluate_telemetry(test_case: TestCase, telemetry_path: str) -> bool:
         )
     else:
         direct_results = []
-    # Combine all results
+
     verification_results = (
         checkpoint_results + hypothesis_answer_results + direct_results
     )
-    # Summarize results
+
     output_message = ""
     output_message += (
         f"""<yellow>Hypothesis Final answer extracted: {hypothesis_answer}</yellow>\n"""

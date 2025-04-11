@@ -1,4 +1,4 @@
-from loguru import logger
+from flow_portal.logging import logger
 
 
 def show_plan(plan: str) -> None:

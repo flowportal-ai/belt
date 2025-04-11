@@ -2,7 +2,7 @@ from typing import Any, Dict, List
 import json
 
 from flow_portal import AgentFramework
-from loguru import logger
+from flow_portal.logging import logger
 from flow_portal.telemetry import TelemetryProcessor
 
 

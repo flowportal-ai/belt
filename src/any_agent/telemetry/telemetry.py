@@ -1,9 +1,10 @@
-from typing import Any, Dict, List, ClassVar
 import json
 import re
 from abc import ABC, abstractmethod
+from typing import Any, Dict, List, ClassVar
+
 from flow_portal import AgentFramework
-from loguru import logger
+from flow_portal.logging import logger
 
 
 class TelemetryProcessor(ABC):

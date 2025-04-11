@@ -4,11 +4,8 @@ from flow_portal import AgentFramework
 from langchain_core.messages import BaseMessage
 
 
+from flow_portal.logging import logger
 from flow_portal.telemetry import TelemetryProcessor
-
-from flow_portal.evaluation.logging import get_logger
-
-logger = get_logger()
 
 
 class LangchainTelemetryProcessor(TelemetryProcessor):

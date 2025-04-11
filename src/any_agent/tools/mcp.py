@@ -1,11 +1,11 @@
 """Tools for managing MCP (Model Context Protocol) connections and resources."""
 
-from abc import ABC, abstractmethod
 import os
-from loguru import logger
 from textwrap import dedent
+from abc import ABC, abstractmethod
 
 from flow_portal.config import MCPTool
+from flow_portal.logging import logger
 
 try:
     from mcp import ClientSession, StdioServerParameters
