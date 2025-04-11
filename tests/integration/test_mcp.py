@@ -4,10 +4,7 @@ import pytest
 
 from flow_portal import AgentFramework, AgentConfig, AnyAgent
 
-# LLAMAINDEX is not yet supported in this test
-frameworks = [
-    item for item in AgentFramework if item not in [AgentFramework.LLAMAINDEX]
-]
+frameworks = [item for item in AgentFramework]
 
 
 @pytest.mark.parametrize(
