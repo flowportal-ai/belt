@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 
 from flow_portal.tracing import _get_tracer_provider, setup_tracing
-from flow_portal.config import AgentFramework
+from flow_portal.config import AgentFramework, TracingConfig
 
 
 def test_get_tracer_provider(tmp_path):
@@ -17,6 +17,7 @@ def test_get_tracer_provider(tmp_path):
         _get_tracer_provider(
             output_dir=tmp_path / "traces",
             agent_framework=AgentFramework.OPENAI,
+            tracing_config=TracingConfig(),
         )
         assert (tmp_path / "traces").exists()
         mock_trace.set_tracer_provider.assert_called_once_with(

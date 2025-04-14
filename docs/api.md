@@ -8,6 +8,8 @@
 
 ::: flow_portal.config.MCPTool
 
+::: flow_portal.config.TracingConfig
+
 ::: flow_portal.instructions
 
 ::: flow_portal.tools
