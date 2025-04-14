@@ -28,7 +28,8 @@ class AnyAgent(ABC):
             from flow_portal.frameworks.llama_index import LlamaIndexAgent as Agent
         elif agent_framework == AgentFramework.GOOGLE:
             from flow_portal.frameworks.google import GoogleAgent as Agent
-
+        elif agent_framework == AgentFramework.AGNO:
+            from flow_portal.frameworks.agno import AgnoAgent as Agent
         else:
             raise ValueError(f"Unsupported agent framework: {agent_framework}")
         agent = Agent(agent_config, managed_agents=managed_agents)
