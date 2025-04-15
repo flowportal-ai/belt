@@ -32,7 +32,7 @@ def test_load_and_run_agent(framework, tmp_path, refresh_tools):
     agent_config = AgentConfig(
         tools=["flow_portal.tools.search_web"],
         instructions="Search the web to answer",
-        model_args={"parallel_tool_calls": False},
+        model_args={"parallel_tool_calls": False} if framework != "agno" else None,
         **kwargs,
     )
     agent = AnyAgent.create(agent_framework, agent_config)
