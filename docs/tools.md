@@ -35,18 +35,13 @@ tool so it becomes usable by the selected framework.
 
     ```py
     from flow_portal import AgentConfig, AgentFramework, AnyAgent
-    from langchain_community.tools import TavilySearchResults
+    from flow_portal.tools import search_web
 
     framework = AgentFramework("openai")
 
     main_agent = AgentConfig(
         model_id="gpt-4o-mini",
-        tools=[
-            TavilySearchResults(
-                max_results=3,
-                include_raw_content=True,
-            ),
-        ]
+        tools=[search_web]
     )
     ```
 
