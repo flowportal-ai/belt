@@ -11,13 +11,13 @@ tool so it becomes usable by the selected framework.
 
     For a tool that you would import like:
 
-    ```py
+    ```python
     from flow_portal.tools import search_web
     ```
 
     The expected syntax is `flow_portal.tools.search_web`
 
-    ```py
+    ```python
     from flow_portal import AgentConfig, AgentFramework, AnyAgent
 
     framework = AgentFramework("openai")
@@ -33,7 +33,7 @@ tool so it becomes usable by the selected framework.
 
 === "Callable"
 
-    ```py
+    ```python
     from flow_portal import AgentConfig, AgentFramework, AnyAgent
     from flow_portal.tools import search_web
 
@@ -47,7 +47,7 @@ tool so it becomes usable by the selected framework.
 
 === "MCP"
 
-    ```py
+    ```python
     from flow_portal import AgentConfig, AgentFramework, AnyAgent
     from flow_portal.config import MCPTool
 
