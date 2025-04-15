@@ -16,11 +16,12 @@ framework = AgentFramework("openai")
 setup_tracing(framework)
 
 agent = AnyAgent.create(
-        main_agent=AgentConfig(
-        model_id="gpt-4o",
-        tools=["flow_portal.tools.search_web"]
-    )
-)
+        framework,
+        AgentConfig(
+                model_id="gpt-4o",
+                tools=["flow_portal.tools.search_web"]
+            )
+        )
 agent.run("Which agent framework is the best?")
 ```
 
