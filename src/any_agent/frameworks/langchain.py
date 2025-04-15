@@ -2,13 +2,15 @@ import importlib
 from typing import Any, Optional, List
 
 from flow_portal.config import AgentFramework, AgentConfig
-from flow_portal.frameworks.flow_portal import AnyAgent
 from flow_portal.logging import logger
+from flow_portal.frameworks.flow_portal import AnyAgent
+from flow_portal.instructions import get_instructions
 from flow_portal.tools.wrappers import import_and_wrap_tools
 
 try:
     from langgraph.prebuilt import create_react_agent
     from langgraph.graph.graph import CompiledGraph
+    from langgraph_swarm import create_handoff_tool, create_swarm
 
     langchain_available = True
 except ImportError:
@@ -31,6 +33,8 @@ class LangchainAgent(AnyAgent):
         self.managed_agents = managed_agents
         self.config = config
         self._agent = None
+        # Langgraph doesn't let you easily access what tools are loaded from the CompiledGraph,
+        # so we'll store a list of them in this class
         self._tools = []
         self._mcp_servers = None
 
@@ -46,14 +50,11 @@ class LangchainAgent(AnyAgent):
     async def _load_agent(self) -> None:
         """Load the LangChain agent with the given configuration."""
 
-        if not self.config.tools:
+        if not self.managed_agents and not self.config.tools:
             self.config.tools = [
                 "flow_portal.tools.search_web",
                 "flow_portal.tools.visit_webpage",
             ]
-
-        if self.managed_agents:
-            raise NotImplementedError("langchain managed agents are not supported yet")
 
         imported_tools, mcp_servers = await import_and_wrap_tools(
             self.config.tools, agent_framework=AgentFramework.LANGCHAIN
@@ -64,28 +65,69 @@ class LangchainAgent(AnyAgent):
         for mcp_server in mcp_servers:
             imported_tools.extend(mcp_server.tools)
 
-        model = self._get_model(self.config)
+        if self.managed_agents:
+            swarm = []
+            managed_names = []
+            for n, managed_agent in enumerate(self.managed_agents):
+                managed_tools, managed_mcp_servers = await import_and_wrap_tools(
+                    managed_agent.tools, agent_framework=AgentFramework.LANGCHAIN
+                )
+                managed_tools.extend(
+                    [
+                        tool
+                        for mcp_server in managed_mcp_servers
+                        for tool in mcp_server.tools
+                    ]
+                )
+                name = managed_agent.name
+                if not name or name == "flow_portal":
+                    logger.warning(
+                        "Overriding name for managed_agent. Can't use the default."
+                    )
+                    name = f"managed_agent_{n}"
+                managed_names.append(name)
 
-        self._agent: CompiledGraph = create_react_agent(
-            model=model,
-            tools=imported_tools,
-            prompt=self.config.instructions,
-            **self.config.agent_args or {},
-        )
-        # Langgraph doesn't let you easily access what tools are loaded from the CompiledGraph, so we'll store a list of them in this class
-        self._tools = imported_tools
+                managed_agent = create_react_agent(
+                    name=name,
+                    model=self._get_model(managed_agent),
+                    tools=managed_tools
+                    + [create_handoff_tool(agent_name=self.config.name)],
+                    prompt=get_instructions(managed_agent.instructions),
+                    **managed_agent.agent_args or {},
+                )
+                swarm.append(managed_agent)
+
+            imported_tools += [
+                create_handoff_tool(agent_name=managed_name)
+                for managed_name in managed_names
+            ]
+
+            main_agent = create_react_agent(
+                name=self.config.name,
+                model=self._get_model(self.config),
+                tools=imported_tools,
+                prompt=get_instructions(self.config.instructions),
+                **self.config.agent_args or {},
+            )
+            swarm.append(main_agent)
+            workflow = create_swarm(swarm, default_active_agent=self.config.name)
+            self._agent: CompiledGraph = workflow.compile()
+            self._tools = imported_tools
+        else:
+            self._agent: CompiledGraph = create_react_agent(
+                name=self.config.name,
+                model=self._get_model(self.config),
+                tools=imported_tools,
+                prompt=get_instructions(self.config.instructions),
+                **self.config.agent_args or {},
+            )
+            self._tools = imported_tools
 
     async def run_async(self, prompt: str) -> Any:
         """Run the LangChain agent with the given prompt."""
         inputs = {"messages": [("user", prompt)]}
-        message = None
-        async for s in self._agent.astream(inputs, stream_mode="values"):
-            message = s["messages"][-1]
-            if isinstance(message, tuple):
-                logger.debug(message)
-            else:
-                message.pretty_print()
-        return message
+        result = await self._agent.ainvoke(inputs)
+        return result
 
     @property
     def tools(self) -> List[str]:

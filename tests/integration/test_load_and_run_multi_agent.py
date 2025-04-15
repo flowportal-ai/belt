@@ -6,7 +6,7 @@ from flow_portal import AgentFramework, AgentConfig, AnyAgent
 from flow_portal.tracing import setup_tracing
 
 
-@pytest.mark.parametrize("framework", ("google", "openai", "smolagents"))
+@pytest.mark.parametrize("framework", ("google", "langchain", "openai", "smolagents"))
 @pytest.mark.skipif(
     os.environ.get("ANY_AGENT_INTEGRATION_TESTS", "FALSE").upper() != "TRUE",
     reason="Integration tests require `ANY_AGENT_INTEGRATION_TESTS=TRUE` env var",
@@ -17,32 +17,28 @@ def test_load_and_run_multi_agent(framework, tmp_path, refresh_tools):
     if framework == "smolagents":
         kwargs["agent_type"] = "ToolCallingAgent"
 
-    if framework != "openai":
-        kwargs["model_id"] = "gemini/gemini-2.0-flash"
-        if "GEMINI_API_KEY" not in os.environ:
-            pytest.skip(f"GEMINI_API_KEY needed for {framework}")
-    else:
-        kwargs["model_id"] = "gpt-4o-mini"
-        if "OPENAI_API_KEY" not in os.environ:
-            pytest.skip(f"OPENAI_API_KEY needed for {framework}")
+    kwargs["model_id"] = "gpt-4o"
+    if "OPENAI_API_KEY" not in os.environ:
+        pytest.skip(f"OPENAI_API_KEY needed for {framework}")
 
     if framework != "google":
         setup_tracing(agent_framework, str(tmp_path / "traces"))
 
     main_agent = AgentConfig(
         instructions="Use the available agents to complete the task.",
+        model_args={"parallel_tool_calls": False},
         **kwargs,
     )
     managed_agents = [
         AgentConfig(
             name="search_web_agent",
-            model_id=kwargs["model_id"],
+            model_id="gpt-4o-mini",
             description="Agent that can search the web",
             tools=["flow_portal.tools.search_web"],
         ),
         AgentConfig(
             name="visit_webpage_agent",
-            model_id=kwargs["model_id"],
+            model_id="gpt-4o-mini",
             description="Agent that can visit webpages",
             tools=["flow_portal.tools.visit_webpage"],
         ),
@@ -63,4 +59,5 @@ def test_load_and_run_multi_agent(framework, tmp_path, refresh_tools):
         managed_agents=managed_agents,
     )
     result = agent.run("Which agent framework is the best?")
+
     assert result
