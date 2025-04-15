@@ -3,7 +3,6 @@ from typing import Optional, Any, List
 
 from flow_portal.config import AgentFramework, AgentConfig
 from flow_portal.frameworks.flow_portal import AnyAgent
-from flow_portal.instructions import get_instructions
 from flow_portal.logging import logger
 from flow_portal.tools.wrappers import import_and_wrap_tools
 
@@ -83,7 +82,7 @@ class OpenAIAgent(AnyAgent):
                     kwargs["model_settings"] = managed_agent.model_args
                 instance = Agent(
                     name=managed_agent.name,
-                    instructions=get_instructions(managed_agent.instructions),
+                    instructions=managed_agent.instructions,
                     model=self._get_model(managed_agent, api_key_var, base_url),
                     tools=managed_tools,
                     mcp_servers=[

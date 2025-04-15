@@ -10,8 +10,6 @@
 
 ::: flow_portal.config.TracingConfig
 
-::: flow_portal.instructions
-
 ::: flow_portal.tools
 
 ::: flow_portal.tracing
