@@ -1,10 +1,10 @@
-from typing import Dict, List, Any
+from typing import Any
 
 from flow_portal.evaluation.evaluators.LLMEvaluator import LLMEvaluator
 from flow_portal.evaluation.evaluators.schemas import EvaluationResult
-from flow_portal.telemetry import TelemetryProcessor
 from flow_portal.evaluation.test_case import CheckpointCriteria
 from flow_portal.logging import logger
+from flow_portal.telemetry import TelemetryProcessor
 
 
 class CheckpointEvaluator(LLMEvaluator):
@@ -12,10 +12,10 @@ class CheckpointEvaluator(LLMEvaluator):
 
     def evaluate(
         self,
-        telemetry: List[Dict[str, Any]],
-        checkpoints: List[CheckpointCriteria],
+        telemetry: list[dict[str, Any]],
+        checkpoints: list[CheckpointCriteria],
         processor: TelemetryProcessor,
-    ) -> List[EvaluationResult]:
+    ) -> list[EvaluationResult]:
         """
         Verify each checkpoint against the telemetry data using LLM
 

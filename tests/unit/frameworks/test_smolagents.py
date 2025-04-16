@@ -1,8 +1,9 @@
 import os
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
-from flow_portal import AgentFramework, AgentConfig, AnyAgent
+import pytest
+
+from flow_portal import AgentConfig, AgentFramework, AnyAgent
 from flow_portal.frameworks.smolagents import (
     DEFAULT_AGENT_TYPE,
     DEFAULT_MODEL_CLASS,
@@ -52,10 +53,10 @@ def test_load_smolagent_with_api_base_and_api_key_var():
             AgentFramework.SMOLAGENTS,
             AgentConfig(
                 model_id="openai/o3-mini",
-                model_args=dict(
-                    api_base="https://custom-api.example.com",
-                    api_key_var="OPENAI_API_KEY",
-                ),
+                model_args={
+                    "api_base": "https://custom-api.example.com",
+                    "api_key_var": "OPENAI_API_KEY",
+                },
             ),
         )
 
@@ -89,7 +90,7 @@ def test_load_smolagent_environment_error():
                 AgentFramework.SMOLAGENTS,
                 AgentConfig(
                     model_id="openai/o3-mini",
-                    model_args=dict(api_key_var="MISSING_KEY"),
+                    model_args={"api_key_var": "MISSING_KEY"},
                 ),
             )
 

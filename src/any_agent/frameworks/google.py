@@ -1,7 +1,7 @@
-from typing import Optional, Any, List
+from typing import Any
 from uuid import uuid4
 
-from flow_portal.config import AgentFramework, AgentConfig
+from flow_portal.config import AgentConfig, AgentFramework
 from flow_portal.frameworks.flow_portal import AnyAgent
 from flow_portal.logging import logger
 from flow_portal.tools.wrappers import import_and_wrap_tools
@@ -22,12 +22,11 @@ class GoogleAgent(AnyAgent):
     """Google agent implementation that handles both loading and running."""
 
     def __init__(
-        self, config: AgentConfig, managed_agents: Optional[list[AgentConfig]] = None
+        self, config: AgentConfig, managed_agents: list[AgentConfig] | None = None
     ):
         if not adk_available:
-            raise ImportError(
-                "You need to `pip install 'any-agent[google]'` to use this agent"
-            )
+            msg = "You need to `pip install 'any-agent[google]'` to use this agent"
+            raise ImportError(msg)
         self.managed_agents = managed_agents
         self.config = config
         self._agent = None
@@ -117,7 +116,7 @@ class GoogleAgent(AnyAgent):
         return session.state.get("response", None)
 
     @property
-    def tools(self) -> List[str]:
+    def tools(self) -> list[str]:
         """
         Return the tools used by the agent.
         This property is read-only and cannot be modified.

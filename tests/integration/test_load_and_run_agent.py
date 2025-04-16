@@ -2,10 +2,10 @@ import os
 
 import pytest
 
-from flow_portal import AgentFramework, AgentConfig, AnyAgent
+from flow_portal import AgentConfig, AgentFramework, AnyAgent
 from flow_portal.tracing import setup_tracing
 
-frameworks = [item for item in AgentFramework]
+frameworks = list(AgentFramework)
 
 
 @pytest.mark.parametrize("framework", frameworks)

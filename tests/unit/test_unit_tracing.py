@@ -1,9 +1,9 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from flow_portal.tracing import _get_tracer_provider, setup_tracing
 from flow_portal.config import AgentFramework, TracingConfig
+from flow_portal.tracing import _get_tracer_provider, setup_tracing
 
 
 def test_get_tracer_provider(tmp_path):

@@ -1,8 +1,8 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from flow_portal import AgentFramework, AgentConfig, AnyAgent
+from flow_portal import AgentConfig, AgentFramework, AnyAgent
 from flow_portal.tools import (
     search_web,
     visit_webpage,
