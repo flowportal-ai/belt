@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING, Any
 from flow_portal.config import AgentConfig, AgentFramework
 from flow_portal.frameworks.flow_portal import AnyAgent
 from flow_portal.logging import logger
-from flow_portal.tools.wrappers import import_and_wrap_tools
+from flow_portal.tools import search_web, visit_webpage
+from flow_portal.tools.wrappers import wrap_tools
 
 if TYPE_CHECKING:
     from langgraph.graph.graph import CompiledGraph
@@ -52,11 +53,11 @@ class LangchainAgent(AnyAgent):
 
         if not self.managed_agents and not self.config.tools:
             self.config.tools = [
-                "flow_portal.tools.search_web",
-                "flow_portal.tools.visit_webpage",
+                search_web,
+                visit_webpage,
             ]
 
-        imported_tools, mcp_servers = await import_and_wrap_tools(
+        imported_tools, mcp_servers = await wrap_tools(
             self.config.tools, agent_framework=AgentFramework.LANGCHAIN
         )
         self._mcp_servers = mcp_servers
@@ -69,7 +70,7 @@ class LangchainAgent(AnyAgent):
             swarm = []
             managed_names = []
             for n, managed_agent in enumerate(self.managed_agents):
-                managed_tools, managed_mcp_servers = await import_and_wrap_tools(
+                managed_tools, managed_mcp_servers = await wrap_tools(
                     managed_agent.tools, agent_framework=AgentFramework.LANGCHAIN
                 )
                 managed_tools.extend(

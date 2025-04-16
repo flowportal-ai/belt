@@ -3,7 +3,8 @@ from typing import Any
 from flow_portal.config import AgentConfig, AgentFramework
 from flow_portal.frameworks.flow_portal import AnyAgent
 from flow_portal.logging import logger
-from flow_portal.tools.wrappers import import_and_wrap_tools
+from flow_portal.tools import search_web, visit_webpage
+from flow_portal.tools.wrappers import wrap_tools
 
 try:
     from agno.agent import Agent
@@ -41,10 +42,10 @@ class AgnoAgent(AnyAgent):
     async def _load_agent(self) -> None:
         if not self.managed_agents and not self.config.tools:
             self.config.tools = [
-                "flow_portal.tools.search_web",
-                "flow_portal.tools.visit_webpage",
+                search_web,
+                visit_webpage,
             ]
-        tools, mcp_servers = await import_and_wrap_tools(
+        tools, mcp_servers = await wrap_tools(
             self.config.tools, agent_framework=AgentFramework.AGNO
         )
         # Add to agent so that it doesn't get garbage collected

@@ -4,7 +4,8 @@ from uuid import uuid4
 from flow_portal.config import AgentConfig, AgentFramework
 from flow_portal.frameworks.flow_portal import AnyAgent
 from flow_portal.logging import logger
-from flow_portal.tools.wrappers import import_and_wrap_tools
+from flow_portal.tools import search_web, visit_webpage
+from flow_portal.tools.wrappers import wrap_tools
 
 try:
     from google.adk.agents import Agent
@@ -41,10 +42,10 @@ class GoogleAgent(AnyAgent):
         """Load the Google agent with the given configuration."""
         if not self.managed_agents and not self.config.tools:
             self.config.tools = [
-                "flow_portal.tools.search_web",
-                "flow_portal.tools.visit_webpage",
+                search_web,
+                visit_webpage,
             ]
-        tools, mcp_servers = await import_and_wrap_tools(
+        tools, mcp_servers = await wrap_tools(
             self.config.tools, agent_framework=AgentFramework.GOOGLE
         )
         # Add to agent so that it doesn't get garbage collected
@@ -55,7 +56,7 @@ class GoogleAgent(AnyAgent):
         sub_agents_instanced = []
         if self.managed_agents:
             for managed_agent in self.managed_agents:
-                managed_tools, managed_mcp_servers = await import_and_wrap_tools(
+                managed_tools, managed_mcp_servers = await wrap_tools(
                     managed_agent.tools, agent_framework=AgentFramework.GOOGLE
                 )
                 # Add to agent so that it doesn't get garbage collected

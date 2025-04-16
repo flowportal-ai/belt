@@ -3,6 +3,7 @@ import os
 import pytest
 
 from flow_portal import AgentConfig, AgentFramework, AnyAgent
+from flow_portal.tools import search_web, show_final_answer, visit_webpage
 from flow_portal.tracing import setup_tracing
 
 
@@ -13,7 +14,7 @@ from flow_portal.tracing import setup_tracing
     os.environ.get("ANY_AGENT_INTEGRATION_TESTS", "FALSE").upper() != "TRUE",
     reason="Integration tests require `ANY_AGENT_INTEGRATION_TESTS=TRUE` env var",
 )
-def test_load_and_run_multi_agent(framework, tmp_path, refresh_tools):
+def test_load_and_run_multi_agent(framework, tmp_path):
     agent_framework = AgentFramework(framework)
     kwargs = {}
     if framework == "smolagents":
@@ -32,18 +33,19 @@ def test_load_and_run_multi_agent(framework, tmp_path, refresh_tools):
         model_args={"parallel_tool_calls": False},
         **kwargs,
     )
+
     managed_agents = [
         AgentConfig(
             name="search_web_agent",
             model_id="gpt-4.1-nano",
             description="Agent that can search the web",
-            tools=["flow_portal.tools.search_web"],
+            tools=[search_web],
         ),
         AgentConfig(
             name="visit_webpage_agent",
             model_id="gpt-4.1-nano",
             description="Agent that can visit webpages",
-            tools=["flow_portal.tools.visit_webpage"],
+            tools=[visit_webpage],
         ),
     ]
     if framework != "smolagents":
@@ -52,7 +54,7 @@ def test_load_and_run_multi_agent(framework, tmp_path, refresh_tools):
                 name="final_answer_agent",
                 model_id="gpt-4.1-nano",
                 description="Agent that can show the final answer",
-                tools=["flow_portal.tools.show_final_answer"],
+                tools=[show_final_answer],
                 handoff=True,
             ),
         )

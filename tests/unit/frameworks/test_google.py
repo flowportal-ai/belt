@@ -63,14 +63,14 @@ def test_load_google_multiagent():
                     model_id="gpt-4o-mini",
                     name="search-web-agent",
                     tools=[
-                        "flow_portal.tools.search_web",
-                        "flow_portal.tools.visit_webpage",
+                        search_web,
+                        visit_webpage,
                     ],
                 ),
                 AgentConfig(
                     model_id="gpt-4o-mini",
                     name="communication-agent",
-                    tools=["flow_portal.tools.show_final_answer"],
+                    tools=[show_final_answer],
                     handoff=True,
                 ),
             ],

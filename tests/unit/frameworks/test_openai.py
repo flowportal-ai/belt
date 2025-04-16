@@ -81,7 +81,7 @@ def test_load_openai_with_mcp_server():
     with (
         patch("flow_portal.frameworks.openai.Agent", mock_agent),
         patch("agents.function_tool", mock_function_tool),
-        patch("flow_portal.frameworks.openai.import_and_wrap_tools") as mock_wrap_tools,
+        patch("flow_portal.frameworks.openai.wrap_tools") as mock_wrap_tools,
     ):
         # Setup the mock to return tools and MCP servers
         mock_wrap_tools.return_value = (
@@ -121,24 +121,25 @@ def test_load_openai_multiagent():
         main_agent = AgentConfig(
             model_id="o3-mini",
         )
+
         managed_agents = [
             AgentConfig(
                 model_id="gpt-4o-mini",
                 name="user-verification-agent",
-                tools=["flow_portal.tools.ask_user_verification"],
+                tools=[ask_user_verification],
             ),
             AgentConfig(
                 model_id="gpt-4o",
                 name="search-web-agent",
                 tools=[
-                    "flow_portal.tools.search_web",
-                    "flow_portal.tools.visit_webpage",
+                    search_web,
+                    visit_webpage,
                 ],
             ),
             AgentConfig(
                 model_id="gpt-4o-mini",
                 name="communication-agent",
-                tools=["flow_portal.tools.show_final_answer"],
+                tools=[show_final_answer],
                 handoff=True,
             ),
         ]

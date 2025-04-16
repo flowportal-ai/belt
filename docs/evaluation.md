@@ -23,10 +23,10 @@ with user defined criteria. The steps for evaluating an agent are as follows:
 ```python
 from flow_portal import AgentConfig, AgentFramework, AnyAgent
 from flow_portal.tracing import setup_tracing
-
+from flow_portal.tools import search_web
 main_agent = AgentConfig(
 	model_id="gpt-4o-mini",
-    tools=["flow_portal.tools.search_web"]
+    tools=[search_web]
 )
 framework=AgentFramework("langchain")
 tracing_path = setup_tracing(framework, "output")

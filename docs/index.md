@@ -36,9 +36,10 @@ from flow_portal import AgentConfig, AgentFramework, AnyAgent
 Configure the agent:
 
 ```python
+from flow_portal.tools import search_web, visit_webpage
 main_agent = AgentConfig(
     model_id="gpt-4o",
-    tools=["flow_portal.tools.search_web", "flow_portal.tools.visit_webpage"]
+    tools=[search_web, visit_webpage]
 )
 ```
 
@@ -87,18 +88,19 @@ This agent will act as the "orchestrator".
 Then, configure the list of `managed_agents`:
 
 ```python
+from flow_portal.tools import search_web, visit_webpage
 managed_agents = [
     AgentConfig(
         name="search_web_agent",
         model_id="gpt-4o-mini",
         description="Agent that can search the web",
-        tools=["flow_portal.tools.search_web"]
+        tools=[search_web]
     ),
     AgentConfig(
         name="visit_webpage_agent",
         model_id="gpt-4o-mini",
         description="Agent that can visit webpages",
-        tools=["flow_portal.tools.visit_webpage"]
+        tools=[visit_webpage]
     )
 ]
 ```
