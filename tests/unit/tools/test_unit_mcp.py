@@ -3,6 +3,7 @@
 
 import asyncio
 import unittest
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 from flow_portal.tools.mcp import (
@@ -16,24 +17,24 @@ class TestMCPServerBase(unittest.TestCase):
 
     # Define the test class once at class level instead of in each test method
     class ConcreteMCPManager(MCPServerBase):
-        def setup_tools(self):
+        async def setup_tools(self) -> None:
             pass
 
-        def cleanup(self):
+        def cleanup(self) -> None:
             pass
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up test fixtures before each test."""
         # Common test data
         self.test_tool = MagicMock()
         self.test_tool.name = "test_tool"
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         """Clean up after each test."""
 
 
 # Common helper functions for all test classes
-def create_mock_tools():
+def create_mock_tools() -> list[MagicMock]:
     """Helper method to create mock tools."""
     mock_tool1 = MagicMock()
     mock_tool1.name = "tool1"
@@ -42,7 +43,7 @@ def create_mock_tools():
     return [mock_tool1, mock_tool2]
 
 
-def create_specific_mock_tools():
+def create_specific_mock_tools() -> list[MagicMock]:
     """Helper method to create specific mock tools."""
     mock_read_tool = MagicMock()
     mock_read_tool.name = "read_thing"
@@ -58,7 +59,7 @@ def create_specific_mock_tools():
 class TestSmolagentsMCPServerStdio(unittest.TestCase):
     """Tests for the SmolagentsMCPServerStdio class."""
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up test fixtures before each test."""
         # Common test data
         self.test_tool = MagicMock()
@@ -70,7 +71,11 @@ class TestSmolagentsMCPServerStdio(unittest.TestCase):
         self.mock_context = MagicMock()
         self.mock_context.__enter__.return_value = self.mock_collection
 
-    def test_setup_tools_with_none_tools(self, mock_stdio_params, mock_tool_collection):
+    def test_setup_tools_with_none_tools(
+        self,
+        mock_stdio_params: Any,
+        mock_tool_collection: Any,
+    ) -> None:
         """Test that when mcp_tool.tools is None, all available tools are used."""
         # Setup mock tools
         mock_tools = create_mock_tools()
@@ -90,8 +95,10 @@ class TestSmolagentsMCPServerStdio(unittest.TestCase):
         assert len(mcp_server.tools) == 2
 
     def test_setup_tools_with_specific_tools(
-        self, mock_stdio_params, mock_tool_collection
-    ):
+        self,
+        mock_stdio_params: Any,
+        mock_tool_collection: Any,
+    ) -> None:
         """Test that when mcp_tool.tools has specific values, only those tools are used."""
         # Setup mock tools
         mock_tools = create_specific_mock_tools()
@@ -108,7 +115,7 @@ class TestSmolagentsMCPServerStdio(unittest.TestCase):
 
         # Verify only the requested tools are included
         assert len(mcp_server.tools) == 2
-        tool_names = [tool.name for tool in mcp_server.tools]
+        tool_names = [tool.name for tool in mcp_server.tools]  # type: ignore[union-attr]
         assert "read_thing" in tool_names
         assert "write_thing" in tool_names
         assert "other_thing" not in tool_names
