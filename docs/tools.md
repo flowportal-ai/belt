@@ -16,7 +16,7 @@ See [SuperGateway](https://github.com/supercorp-ai/supergateway) for an easy way
     from flow_portal import AgentConfig, AgentFramework, AnyAgent
     from flow_portal.tools import search_web
 
-    framework = AgentFramework("openai")
+    framework = "openai"
 
     main_agent = AgentConfig(
         model_id="gpt-4o-mini",
@@ -30,7 +30,7 @@ See [SuperGateway](https://github.com/supercorp-ai/supergateway) for an easy way
     from flow_portal import AgentConfig, AgentFramework, AnyAgent
     from flow_portal.config import MCPStdioParams
 
-    framework = AgentFramework("openai")
+    framework = "openai"
 
     main_agent = AgentConfig(
         model_id="gpt-4o-mini",
@@ -50,7 +50,7 @@ See [SuperGateway](https://github.com/supercorp-ai/supergateway) for an easy way
     from flow_portal import AgentConfig, AgentFramework, AnyAgent
     from flow_portal.config import MCPSseParams
 
-    framework = AgentFramework("openai")
+    framework = "openai"
 
     main_agent = AgentConfig(
         model_id="gpt-4o-mini",

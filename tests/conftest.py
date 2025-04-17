@@ -1,6 +1,8 @@
 import pytest
 import rich.console
 
+from flow_portal.config import AgentFramework
+
 
 @pytest.fixture(autouse=True)
 def disable_rich_console(
@@ -15,3 +17,8 @@ def disable_rich_console(
         original_init(self, *args, **kwargs)
 
     monkeypatch.setattr(rich.console.Console, "__init__", quiet_init)
+
+
+@pytest.fixture(params=list(AgentFramework), ids=lambda x: x.name)
+def agent_framework(request: pytest.FixtureRequest) -> AgentFramework:
+    return request.param  # type: ignore[no-any-return]

@@ -12,7 +12,7 @@ from flow_portal import AgentConfig, AgentFramework, AnyAgent
 from flow_portal.tracing import setup_tracing
 from flow_portal.tools import search_web
 
-framework = AgentFramework("openai")
+framework = "openai"
 
 setup_tracing(framework)
 
@@ -69,7 +69,7 @@ You can configure the behavior of the console output using [`TracingConfig`][flo
 from flow_portal.config import TracingConfig
 
 setup_tracing(
-  agent_framework=AgentFramework("langchain"),
+  agent_framework="langchain",
   tracing_config=TracingConfig(
     llm=None,  # Setting to None disables this `openinference.span.kind`
     tool="purple",  # Change the color used to display

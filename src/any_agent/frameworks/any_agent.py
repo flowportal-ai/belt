@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import asyncio
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, assert_never
 
 from flow_portal.config import AgentConfig, AgentFramework, Tool
 
@@ -11,42 +13,53 @@ class AnyAgent(ABC):
     This provides a unified interface for different agent frameworks.
     """
 
-    # factory method
+    @staticmethod
+    def _get_agent_type_by_framework(
+        framework_raw: AgentFramework | str,
+    ) -> type[AnyAgent]:
+        framework = AgentFramework.from_string(framework_raw)
+
+        if framework is AgentFramework.SMOLAGENTS:
+            from flow_portal.frameworks.smolagents import SmolagentsAgent
+
+            return SmolagentsAgent
+
+        if framework is AgentFramework.LANGCHAIN:
+            from flow_portal.frameworks.langchain import LangchainAgent
+
+            return LangchainAgent
+
+        if framework is AgentFramework.OPENAI:
+            from flow_portal.frameworks.openai import OpenAIAgent
+
+            return OpenAIAgent
+
+        if framework is AgentFramework.LLAMA_INDEX:
+            from flow_portal.frameworks.llama_index import LlamaIndexAgent
+
+            return LlamaIndexAgent
+
+        if framework is AgentFramework.GOOGLE:
+            from flow_portal.frameworks.google import GoogleAgent
+
+            return GoogleAgent
+
+        if framework is AgentFramework.AGNO:
+            from flow_portal.frameworks.agno import AgnoAgent
+
+            return AgnoAgent
+
+        assert_never(framework)
+
     @classmethod
     def create(
         cls,
-        agent_framework: AgentFramework,
+        agent_framework: AgentFramework | str,
         agent_config: AgentConfig,
         managed_agents: list[AgentConfig] | None = None,
-    ) -> "AnyAgent":
-        if agent_framework == AgentFramework.SMOLAGENTS:
-            from flow_portal.frameworks.smolagents import (
-                SmolagentsAgent as Agent,
-            )
-        elif agent_framework == AgentFramework.LANGCHAIN:
-            from flow_portal.frameworks.langchain import (  # type: ignore[assignment]
-                LangchainAgent as Agent,
-            )
-        elif agent_framework == AgentFramework.OPENAI:
-            from flow_portal.frameworks.openai import (  # type: ignore[assignment]
-                OpenAIAgent as Agent,
-            )
-        elif agent_framework == AgentFramework.LLAMAINDEX:
-            from flow_portal.frameworks.llama_index import (  # type: ignore[assignment]
-                LlamaIndexAgent as Agent,
-            )
-        elif agent_framework == AgentFramework.GOOGLE:
-            from flow_portal.frameworks.google import (  # type: ignore[assignment]
-                GoogleAgent as Agent,
-            )
-        elif agent_framework == AgentFramework.AGNO:
-            from flow_portal.frameworks.agno import (  # type: ignore[assignment]
-                AgnoAgent as Agent,
-            )
-        else:
-            msg = f"Unsupported agent framework: {agent_framework}"
-            raise ValueError(msg)
-        agent = Agent(agent_config, managed_agents=managed_agents)
+    ) -> AnyAgent:
+        agent_cls = cls._get_agent_type_by_framework(agent_framework)
+        agent = agent_cls(agent_config, managed_agents=managed_agents)
         asyncio.get_event_loop().run_until_complete(agent._load_agent())
         return agent
 
