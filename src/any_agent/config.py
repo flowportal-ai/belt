@@ -14,10 +14,16 @@ class AgentFramework(str, Enum):
     SMOLAGENTS = "smolagents"
 
 
-class MCPTool(BaseModel):
+class MCPStdioParams(BaseModel):
     command: str
     args: Sequence[str]
     tools: Sequence[str] | None = None
+
+
+class MCPSseParams(BaseModel):
+    url: str
+    headers: dict[str, str] | None = None
+    tools: list[str] | None = None
 
 
 class TracingConfig(BaseModel):
@@ -27,7 +33,9 @@ class TracingConfig(BaseModel):
     chain: str | None = None
 
 
-Tool = str | MCPTool | Callable[..., Any]
+MCPParams = MCPStdioParams | MCPSseParams
+
+Tool = str | MCPParams | Callable[..., Any]
 
 
 class AgentConfig(BaseModel):

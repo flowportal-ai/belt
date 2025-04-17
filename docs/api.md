@@ -6,7 +6,9 @@
 
 ::: flow_portal.AgentConfig
 
-::: flow_portal.config.MCPTool
+::: flow_portal.config.MCPStdioParams
+
+::: flow_portal.config.MCPSseParams
 
 ::: flow_portal.config.TracingConfig
 
