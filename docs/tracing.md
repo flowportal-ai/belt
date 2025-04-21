@@ -8,13 +8,11 @@ standardized [OpenTelemetry](https://opentelemetry.io/) traces for any of the su
 To enable tracing, add a TracingConfig object [`TracingConfig`][flow_portal.config.TracingConfig] when creating an agent
 
 ```python
-from flow_portal import AgentConfig, AgentFramework, AnyAgent, TracingConfig
+from flow_portal import AgentConfig, AnyAgent, TracingConfig
 from flow_portal.tools import search_web
 
-framework = "openai"
-
 agent = AnyAgent.create(
-        agent_framework=framework,
+        "openai",
         agent_config=AgentConfig(
                 model_id="gpt-4o",
                 tools=[search_web],

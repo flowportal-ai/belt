@@ -13,10 +13,8 @@ See [SuperGateway](https://github.com/supercorp-ai/supergateway) for an easy way
 === "Callable"
 
     ```python
-    from flow_portal import AgentConfig, AgentFramework, AnyAgent
+    from flow_portal import AgentConfig
     from flow_portal.tools import search_web
-
-    framework = "openai"
 
     main_agent = AgentConfig(
         model_id="gpt-4o-mini",
@@ -27,10 +25,8 @@ See [SuperGateway](https://github.com/supercorp-ai/supergateway) for an easy way
 === "MCP (Stdio)"
 
     ```python
-    from flow_portal import AgentConfig, AgentFramework, AnyAgent
+    from flow_portal import AgentConfig
     from flow_portal.config import MCPStdioParams
-
-    framework = "openai"
 
     main_agent = AgentConfig(
         model_id="gpt-4o-mini",
@@ -47,10 +43,8 @@ See [SuperGateway](https://github.com/supercorp-ai/supergateway) for an easy way
 === "MCP (SSE)"
 
     ```python
-    from flow_portal import AgentConfig, AgentFramework, AnyAgent
+    from flow_portal import AgentConfig
     from flow_portal.config import MCPSseParams
-
-    framework = "openai"
 
     main_agent = AgentConfig(
         model_id="gpt-4o-mini",
