@@ -4,7 +4,9 @@ import asyncio
 from abc import ABC, abstractmethod
 from typing import Any, assert_never
 
-from flow_portal.config import AgentConfig, AgentFramework, Tool
+from flow_portal.config import AgentConfig, AgentFramework, Tool, TracingConfig
+from flow_portal.logging import logger
+from flow_portal.tracing import setup_tracing
 
 
 class AnyAgent(ABC):
@@ -13,6 +15,9 @@ class AnyAgent(ABC):
     This provides a unified interface for different agent frameworks.
     """
 
+    trace_filepath: str | None = None
+
+    # factory method
     @staticmethod
     def _get_agent_type_by_framework(
         framework_raw: AgentFramework | str,
@@ -57,14 +62,25 @@ class AnyAgent(ABC):
         agent_framework: AgentFramework | str,
         agent_config: AgentConfig,
         managed_agents: list[AgentConfig] | None = None,
+        tracing: TracingConfig | None = None,
     ) -> AnyAgent:
+        framework = AgentFramework.from_string(agent_framework)
         agent_cls = cls._get_agent_type_by_framework(agent_framework)
         agent = agent_cls(agent_config, managed_agents=managed_agents)
-        asyncio.get_event_loop().run_until_complete(agent._load_agent())
+        if tracing is not None:
+            # Agno not yet supported https://github.com/Arize-ai/openinference/issues/1302
+            # Google ADK not yet supported https://github.com/Arize-ai/openinference/issues/1506
+            if framework in (AgentFramework.AGNO, AgentFramework.GOOGLE):
+                logger.warning(
+                    "Tracing is not yet supported for AGNO and GOOGLE frameworks. "
+                )
+            else:
+                agent.trace_filepath = setup_tracing(framework, tracing)
+        asyncio.get_event_loop().run_until_complete(agent.load_agent())
         return agent
 
     @abstractmethod
-    async def _load_agent(self) -> None:
+    async def load_agent(self) -> None:
         """Load the agent instance."""
 
     def run(self, prompt: str) -> Any:

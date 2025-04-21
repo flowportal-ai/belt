@@ -5,31 +5,29 @@ standardized [OpenTelemetry](https://opentelemetry.io/) traces for any of the su
 
 ## Example
 
-To enable tracing, call [`setup_tracing`][flow_portal.tracing.setup_tracing] passing the selected framework.
+To enable tracing, add a TracingConfig object [`TracingConfig`][flow_portal.config.TracingConfig] when creating an agent
 
 ```python
-from flow_portal import AgentConfig, AgentFramework, AnyAgent
-from flow_portal.tracing import setup_tracing
+from flow_portal import AgentConfig, AgentFramework, AnyAgent, TracingConfig
 from flow_portal.tools import search_web
 
 framework = "openai"
 
-setup_tracing(framework)
-
 agent = AnyAgent.create(
-        framework,
-        AgentConfig(
+        agent_framework=framework,
+        agent_config=AgentConfig(
                 model_id="gpt-4o",
-                tools=[search_web]
-            )
-        )
+                tools=[search_web],
+        ),
+        tracing=TracingConfig()
+      )
 agent.run("Which agent framework is the best?")
 ```
 
 ### Outputs
 
-[`setup_tracing`][flow_portal.tracing.setup_tracing] will produce standardized console output regardless of the
-framework used.
+Tracing will output standardized console output regardless of the
+framework used, and will also save the trace as a json file in the directory set by the TracingConfig object. The file path of the trace is stored in the Agent.trace_filepath member variable.
 
 ```console
 ──────────────────────────────────────────────────────────────────────────── LLM ─────────────────────────────────────────────────────────────────────────────
@@ -61,20 +59,6 @@ input: {'query': 'best agent framework 2023'}
 │ Langflow; LangGraph; LlamaIndex; n8n ... Comparing Open-Source AI Agent Frameworks - Langfuse Blog This post offers an in-depth look at some of the        │
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-```
-
-You can configure the behavior of the console output using [`TracingConfig`][flow_portal.config.TracingConfig]:
-
-```python
-from flow_portal.config import TracingConfig
-
-setup_tracing(
-  agent_framework="langchain",
-  tracing_config=TracingConfig(
-    llm=None,  # Setting to None disables this `openinference.span.kind`
-    tool="purple",  # Change the color used to display
-  )
-)
 ```
 
 In addition, an output JSON will be stored in the selected `output_dir`, which is `"traces"` by default:
@@ -163,5 +147,4 @@ In addition, an output JSON will be stored in the selected `output_dir`, which i
       "schema_url": ""
     }
   },
-  ...
 ```
