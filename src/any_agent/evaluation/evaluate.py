@@ -10,7 +10,7 @@ from flow_portal.evaluation.evaluators import (
 from flow_portal.evaluation.results_saver import save_evaluation_results
 from flow_portal.evaluation.test_case import TestCase
 from flow_portal.logging import logger
-from flow_portal.telemetry.telemetry import TelemetryProcessor
+from flow_portal.telemetry import TelemetryProcessor
 
 
 def evaluate_telemetry(test_case: TestCase, telemetry_path: str) -> None:
