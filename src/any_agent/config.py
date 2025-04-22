@@ -59,7 +59,7 @@ class AgentConfig(BaseModel):
     model_id: str
     api_base: str | None = None
     api_key: str | None = None
-    description: str = ""
+    description: str | None = None
     name: str = "flow_portal"
     instructions: str | None = None
     tools: Sequence[Tool] = Field(default_factory=list)

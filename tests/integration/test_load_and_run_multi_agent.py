@@ -22,16 +22,12 @@ def test_load_and_run_multi_agent(
     if "OPENAI_API_KEY" not in os.environ:
         pytest.skip(f"OPENAI_API_KEY needed for {agent_framework.name}")
 
-    if agent_framework is AgentFramework.AGNO:
-        pytest.skip(
-            "AGNO agent is not supported for multi-agent test yet. "
-            "See https://github.com/mozilla-ai/any-agent/issues/78"
-        )
-
     main_agent = AgentConfig(
         instructions="Use the available agents to complete the task.",
         description="The orchestrator that can use other agents.",
-        model_args={"parallel_tool_calls": False},
+        model_args={"parallel_tool_calls": False}
+        if agent_framework is not AgentFramework.AGNO
+        else {},
         **kwargs,  # type: ignore[arg-type]
     )
 
