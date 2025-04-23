@@ -12,7 +12,7 @@ from flow_portal.tracing import setup_tracing
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from flow_portal.tools.mcp import MCPServerBase
+    from flow_portal.tools.mcp.mcp_server import MCPServerBase
 
 
 class AnyAgent(ABC):
