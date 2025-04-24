@@ -1,4 +1,5 @@
 import importlib
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, cast
 
 from flow_portal import AgentConfig, AgentFramework, AnyAgent
@@ -22,6 +23,14 @@ DEFAULT_MODEL_CLASS = "litellm.LiteLLM"
 
 class LlamaIndexAgent(AnyAgent):
     """LLamaIndex agent implementation that handles both loading and running."""
+
+    def __init__(
+        self,
+        config: AgentConfig,
+        managed_agents: Sequence[AgentConfig] | None = None,
+    ):
+        super().__init__(config, managed_agents)
+        self._agent: AgentWorkflow | ReActAgent | None = None
 
     @property
     def framework(self) -> AgentFramework:
@@ -58,7 +67,6 @@ class LlamaIndexAgent(AnyAgent):
                 visit_webpage,
             ]
 
-        self._agent: AgentWorkflow | ReActAgent
         if self.managed_agents:
             agents = []
             managed_names = []
@@ -94,7 +102,7 @@ class LlamaIndexAgent(AnyAgent):
             )
             agents.append(main_agent)
 
-            self._agent = AgentWorkflow(agents=agents, root_agent=main_agent.name)
+            self._agent = AgentWorkflow(agents=agents, root_agent=main_agent.name)  # type: ignore[arg-type]
 
         else:
             imported_tools, _ = await self._load_tools(self.config.tools)
@@ -109,4 +117,8 @@ class LlamaIndexAgent(AnyAgent):
             )
 
     async def run_async(self, prompt: str) -> Any:
+        if not self._agent:
+            error_message = "Agent not loaded. Call load_agent() first."
+            raise ValueError(error_message)
+
         return await self._agent.run(prompt)

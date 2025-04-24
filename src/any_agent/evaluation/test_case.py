@@ -1,7 +1,9 @@
-from collections.abc import Sequence
+from __future__ import annotations
+
+from collections.abc import Sequence  # noqa: TC003
 
 import yaml
-from litellm import validate_environment
+from litellm.utils import validate_environment
 from pydantic import BaseModel, ConfigDict, Field
 from typing_extensions import TypedDict
 
@@ -36,7 +38,7 @@ class TestCase(BaseModel):
     output_path: str = "output/results.json"
 
     @classmethod
-    def from_yaml(cls, test_case_path: str) -> "TestCase":
+    def from_yaml(cls, test_case_path: str) -> TestCase:
         """Load a test case from a YAML file and process it"""
         with open(test_case_path) as f:
             test_case_dict = yaml.safe_load(f)

@@ -7,6 +7,7 @@ from flow_portal.tools import search_web, visit_webpage
 try:
     from agents import (
         Agent,
+        Handoff,
         ModelSettings,
         Runner,
     )
@@ -22,6 +23,14 @@ OPENAI_MAX_TURNS = 30
 class OpenAIAgent(AnyAgent):
     """OpenAI agent implementation that handles both loading and running."""
 
+    def __init__(
+        self,
+        config: AgentConfig,
+        managed_agents: list[AgentConfig] | None = None,
+    ):
+        super().__init__(config, managed_agents)
+        self._agent: Agent | None = None
+
     @property
     def framework(self) -> AgentFramework:
         return AgentFramework.OPENAI
@@ -29,7 +38,7 @@ class OpenAIAgent(AnyAgent):
     def _get_model(
         self,
         agent_config: AgentConfig,
-    ) -> "LitellmModel":
+    ) -> LitellmModel:
         """Get the model configuration for an OpenAI agent."""
         return LitellmModel(
             model=agent_config.model_id,
@@ -54,7 +63,7 @@ class OpenAIAgent(AnyAgent):
         tools, mcp_servers = await self._load_tools(self.config.tools)
         tools = self._filter_mcp_tools(tools, mcp_servers)
 
-        handoffs = []
+        handoffs = list[Agent[Any] | Handoff[Any]]()
         if self.managed_agents:
             for managed_agent in self.managed_agents:
                 managed_tools, managed_mcp_servers = await self._load_tools(
@@ -73,7 +82,7 @@ class OpenAIAgent(AnyAgent):
                         managed_mcp_server.server  # type: ignore[attr-defined]
                         for managed_mcp_server in managed_mcp_servers
                     ],
-                    **kwargs,
+                    **kwargs,  # type: ignore[arg-type]
                 )
                 if managed_agent.handoff:
                     handoffs.append(instance)
@@ -89,7 +98,7 @@ class OpenAIAgent(AnyAgent):
         kwargs_ = self.config.agent_args or {}
         if self.config.model_args:
             kwargs_["model_settings"] = ModelSettings(**self.config.model_args)
-        self._agent: Agent = Agent(
+        self._agent = Agent(
             name=self.config.name,
             instructions=self.config.instructions,
             model=self._get_model(self.config),
@@ -110,4 +119,8 @@ class OpenAIAgent(AnyAgent):
 
     async def run_async(self, prompt: str) -> Any:
         """Run the OpenAI agent with the given prompt asynchronously."""
+        if not self._agent:
+            error_message = "Agent not loaded. Call load_agent() first."
+            raise ValueError(error_message)
+
         return await Runner.run(self._agent, prompt, max_turns=OPENAI_MAX_TURNS)

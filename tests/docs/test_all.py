@@ -18,4 +18,4 @@ def test_files_all(fpath: pathlib.Path) -> None:
         patch("flow_portal.evaluation.evaluate.evaluate_telemetry", mock_evaluate),
         patch("flow_portal.AnyAgent.create", mock_create),
     ):
-        check_md_file(fpath=fpath, memory=True)
+        check_md_file(fpath=fpath, memory=True)  # type: ignore[no-untyped-call]

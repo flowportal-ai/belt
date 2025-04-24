@@ -18,6 +18,14 @@ except ImportError:
 class AgnoAgent(AnyAgent):
     """Agno agent implementation that handles both loading and running."""
 
+    def __init__(
+        self,
+        config: AgentConfig,
+        managed_agents: list[AgentConfig] | None = None,
+    ):
+        super().__init__(config, managed_agents)
+        self._agent: Agent | Team | None = None
+
     @property
     def framework(self) -> AgentFramework:
         return AgentFramework.AGNO
@@ -41,8 +49,6 @@ class AgnoAgent(AnyAgent):
                 search_web,
                 visit_webpage,
             ]
-
-        self._agent: Agent | Team
 
         if self.managed_agents:
             tools, _ = await self._load_tools(self.config.tools)
@@ -72,7 +78,7 @@ class AgnoAgent(AnyAgent):
                 name=f"Team managed by agent {self.config.name}",
                 description=self.config.description,
                 model=self._get_model(self.config),
-                members=members,
+                members=members,  # type: ignore[arg-type]
                 instructions=self.config.instructions,
                 tools=tools,
                 **self.config.agent_args or {},
@@ -89,4 +95,8 @@ class AgnoAgent(AnyAgent):
             )
 
     async def run_async(self, prompt: str) -> Any:
+        if not self._agent:
+            error_message = "Agent not loaded. Call load_agent() first."
+            raise ValueError(error_message)
+
         return await self._agent.arun(prompt)
