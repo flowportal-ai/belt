@@ -99,7 +99,7 @@ class SmolagentsAgent(AnyAgent):
         if self.config.instructions:
             self._agent.prompt_templates["system_prompt"] = self.config.instructions
 
-    def run_async(self, prompt: str, **kwargs) -> Any:  # type: ignore[no-untyped-def]
+    async def run_async(self, prompt: str, **kwargs) -> Any:  # type: ignore[no-untyped-def]
         """Run the Smolagents agent with the given prompt."""
         if not self._agent:
             error_message = "Agent not loaded. Call load_agent() first."
