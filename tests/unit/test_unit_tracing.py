@@ -4,10 +4,10 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from flow_portal.config import AgentFramework, TracingConfig
-from flow_portal.tracing import _get_tracer_provider, setup_tracing
+from flow_portal.tracing import Tracer
 
 
-def test_get_tracer_provider(tmp_path: Path) -> None:
+def test_tracer_initialization(tmp_path: Path) -> None:
     mock_trace = MagicMock()
     mock_tracer_provider = MagicMock()
 
@@ -15,21 +15,30 @@ def test_get_tracer_provider(tmp_path: Path) -> None:
         patch("flow_portal.tracing.trace", mock_trace),
         patch("flow_portal.tracing.TracerProvider", mock_tracer_provider),
     ):
-        _get_tracer_provider(
+        tracer = Tracer(
             agent_framework=AgentFramework.OPENAI,
             tracing_config=TracingConfig(
                 output_dir=str(tmp_path / "traces"),
             ),
         )
+
+        # Verify tracer was initialized correctly
+        assert tracer.agent_framework == AgentFramework.OPENAI
+        assert tracer.tracing_config.output_dir == str(tmp_path / "traces")
+        assert tracer.is_enabled is True
         assert (tmp_path / "traces").exists()
+
+        # Verify tracing was set up
         mock_trace.set_tracer_provider.assert_called_once_with(
             mock_tracer_provider.return_value,
         )
 
 
-def test_invalid_agent_framework(tmp_path: Path) -> None:
-    with pytest.raises(ValueError, match="Unsupported agent framework"):
-        setup_tracing(
-            MagicMock(),
-            tracing_config=TracingConfig(output_dir=str(tmp_path / "traces")),
+def test_tracer_with_unsupported_framework(tmp_path: Path) -> None:
+    with pytest.raises(NotImplementedError, match="AGNO tracing is not supported."):
+        Tracer(
+            agent_framework=AgentFramework.AGNO,
+            tracing_config=TracingConfig(
+                output_dir=str(tmp_path / "traces"), enable_console=False
+            ),
         )
