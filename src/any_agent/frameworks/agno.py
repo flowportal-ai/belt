@@ -1,6 +1,6 @@
 from typing import Any
 
-from flow_portal.config import AgentConfig, AgentFramework
+from flow_portal.config import AgentConfig, AgentFramework, TracingConfig
 from flow_portal.frameworks.flow_portal import AgentResult, AnyAgent
 from flow_portal.logging import logger
 from flow_portal.tools import search_web, visit_webpage
@@ -23,8 +23,9 @@ class AgnoAgent(AnyAgent):
         self,
         config: AgentConfig,
         managed_agents: list[AgentConfig] | None = None,
+        tracing: TracingConfig | None = None,
     ):
-        super().__init__(config, managed_agents)
+        super().__init__(config, managed_agents, tracing)
         self._agent: Agent | Team | None = None
 
     @property
@@ -99,6 +100,11 @@ class AgnoAgent(AnyAgent):
         if not self._agent:
             error_message = "Agent not loaded. Call load_agent() first."
             raise ValueError(error_message)
+        self._create_tracer()
 
         result: AgnoRunResponse = await self._agent.arun(prompt, **kwargs)
-        return AgentResult(final_output=result.content, raw_responses=result.messages)
+        return AgentResult(
+            final_output=result.content,
+            raw_responses=result.messages,
+            trace=self._get_trace(),
+        )

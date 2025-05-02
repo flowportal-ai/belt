@@ -2,7 +2,7 @@ import importlib
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, cast
 
-from flow_portal.config import AgentConfig, AgentFramework
+from flow_portal.config import AgentConfig, AgentFramework, TracingConfig
 from flow_portal.frameworks.flow_portal import AgentResult, AnyAgent
 from flow_portal.logging import logger
 from flow_portal.tools import search_web, visit_webpage
@@ -34,8 +34,9 @@ class LangchainAgent(AnyAgent):
         self,
         config: AgentConfig,
         managed_agents: Sequence[AgentConfig] | None = None,
+        tracing: TracingConfig | None = None,
     ):
-        super().__init__(config, managed_agents)
+        super().__init__(config, managed_agents, tracing)
         self._agent: CompiledGraph | None = None
         self._tools: Sequence[Any] = []
 
@@ -131,7 +132,7 @@ class LangchainAgent(AnyAgent):
         if not self._agent:
             error_message = "Agent not loaded. Call load_agent() first."
             raise ValueError(error_message)
-
+        self._create_tracer()
         inputs = {"messages": [("user", prompt)]}
         result = await self._agent.ainvoke(inputs, **kwargs)
         if not result.get("messages"):
@@ -139,5 +140,7 @@ class LangchainAgent(AnyAgent):
             raise ValueError(msg)
         last_message: BaseMessage = result["messages"][-1]
         return AgentResult(
-            final_output=last_message.content, raw_responses=result["messages"]
+            final_output=last_message.content,
+            raw_responses=result["messages"],
+            trace=self._get_trace(),
         )

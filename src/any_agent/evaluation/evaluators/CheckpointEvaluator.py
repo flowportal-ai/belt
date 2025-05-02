@@ -1,11 +1,11 @@
-from collections.abc import MutableMapping, Sequence
-from typing import Any
+from collections.abc import Sequence
 
 from flow_portal.evaluation.evaluators.LLMEvaluator import LLMEvaluator
 from flow_portal.evaluation.evaluators.schemas import EvaluationResult
 from flow_portal.evaluation.test_case import CheckpointCriteria
 from flow_portal.logging import logger
 from flow_portal.telemetry import TelemetryProcessor
+from flow_portal.tracing import AnyAgentTrace
 
 
 class CheckpointEvaluator(LLMEvaluator):
@@ -13,7 +13,7 @@ class CheckpointEvaluator(LLMEvaluator):
 
     def evaluate(
         self,
-        telemetry: Sequence[MutableMapping[str, Any]],
+        telemetry: AnyAgentTrace,
         checkpoints: Sequence[CheckpointCriteria],
         processor: TelemetryProcessor,
     ) -> list[EvaluationResult]:

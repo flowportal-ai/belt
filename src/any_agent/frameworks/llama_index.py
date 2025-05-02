@@ -3,6 +3,7 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, cast
 
 from flow_portal import AgentConfig, AgentFramework, AnyAgent
+from flow_portal.config import TracingConfig
 from flow_portal.frameworks.flow_portal import AgentResult
 from flow_portal.logging import logger
 from flow_portal.tools import search_web, visit_webpage
@@ -30,8 +31,9 @@ class LlamaIndexAgent(AnyAgent):
         self,
         config: AgentConfig,
         managed_agents: Sequence[AgentConfig] | None = None,
+        tracing: TracingConfig | None = None,
     ):
-        super().__init__(config, managed_agents)
+        super().__init__(config, managed_agents, tracing)
         self._agent: AgentWorkflow | ReActAgent | None = None
 
     @property
@@ -122,7 +124,7 @@ class LlamaIndexAgent(AnyAgent):
         if not self._agent:
             error_message = "Agent not loaded. Call load_agent() first."
             raise ValueError(error_message)
-
+        self._create_tracer()
         result: AgentOutput = await self._agent.run(prompt, **kwargs)
         # assert that it's a TextBlock
         if not result.response.blocks or not hasattr(result.response.blocks[0], "text"):
@@ -131,4 +133,5 @@ class LlamaIndexAgent(AnyAgent):
         return AgentResult(
             final_output=result.response.blocks[0].text,
             raw_responses=None,  # Llama Index isn't giving me the trace history in the result or the _agent.
+            trace=self._get_trace(),
         )

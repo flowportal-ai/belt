@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from uuid import uuid4
 
-from flow_portal.config import AgentConfig, AgentFramework
+from flow_portal.config import AgentConfig, AgentFramework, TracingConfig
 from flow_portal.frameworks.flow_portal import AgentResult, AnyAgent
 from flow_portal.logging import logger
 from flow_portal.tools import search_web, visit_webpage
@@ -25,8 +25,9 @@ class GoogleAgent(AnyAgent):
         self,
         config: AgentConfig,
         managed_agents: Sequence[AgentConfig] | None = None,
+        tracing: TracingConfig | None = None,
     ):
-        super().__init__(config, managed_agents)
+        super().__init__(config, managed_agents, tracing)
         self._agent: Agent | None = None
 
     @property
@@ -94,7 +95,7 @@ class GoogleAgent(AnyAgent):
         if not self._agent:
             error_message = "Agent not loaded. Call load_agent() first."
             raise ValueError(error_message)
-
+        self._create_tracer()
         runner = InMemoryRunner(self._agent)
         user_id = user_id or str(uuid4())
         session_id = session_id or str(uuid4())
@@ -123,4 +124,8 @@ class GoogleAgent(AnyAgent):
         assert session, "Session should not be None"
         response = session.state.get("response", None)
 
-        return AgentResult(final_output=response, raw_responses=session.events)
+        return AgentResult(
+            final_output=response,
+            raw_responses=session.events,
+            trace=self._get_trace(),
+        )

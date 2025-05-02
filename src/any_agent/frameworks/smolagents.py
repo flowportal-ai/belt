@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Any
 
-from flow_portal.config import AgentConfig, AgentFramework
+from flow_portal.config import AgentConfig, AgentFramework, TracingConfig
 from flow_portal.frameworks.flow_portal import AgentResult, AnyAgent
 from flow_portal.tools import search_web, visit_webpage
 
@@ -26,8 +26,9 @@ class SmolagentsAgent(AnyAgent):
         self,
         config: AgentConfig,
         managed_agents: list[AgentConfig] | None = None,
+        tracing: TracingConfig | None = None,
     ):
-        super().__init__(config, managed_agents)
+        super().__init__(config, managed_agents, tracing)
         self._agent: MultiStepAgent | None = None
 
     @property
@@ -104,8 +105,10 @@ class SmolagentsAgent(AnyAgent):
         if not self._agent:
             error_message = "Agent not loaded. Call load_agent() first."
             raise ValueError(error_message)
-
+        self._create_tracer()
         result = self._agent.run(prompt, **kwargs)
         return AgentResult(
-            final_output=result, raw_responses=self._agent.input_messages
+            final_output=result,
+            raw_responses=self._agent.input_messages,
+            trace=self._get_trace(),
         )

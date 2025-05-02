@@ -1,6 +1,6 @@
 from typing import Any
 
-from flow_portal.config import AgentConfig, AgentFramework
+from flow_portal.config import AgentConfig, AgentFramework, TracingConfig
 from flow_portal.frameworks.flow_portal import AgentResult, AnyAgent
 from flow_portal.tools import search_web, visit_webpage
 
@@ -25,8 +25,9 @@ class OpenAIAgent(AnyAgent):
         self,
         config: AgentConfig,
         managed_agents: list[AgentConfig] | None = None,
+        tracing: TracingConfig | None = None,
     ):
-        super().__init__(config, managed_agents)
+        super().__init__(config, managed_agents, tracing)
         self._agent: Agent | None = None
 
     @property
@@ -120,9 +121,10 @@ class OpenAIAgent(AnyAgent):
         if not self._agent:
             error_message = "Agent not loaded. Call load_agent() first."
             raise ValueError(error_message)
-
+        self._create_tracer()
         result = await Runner.run(self._agent, prompt, **kwargs)
         return AgentResult(
             final_output=result.final_output,
             raw_responses=result.raw_responses,
+            trace=self._get_trace(),
         )
