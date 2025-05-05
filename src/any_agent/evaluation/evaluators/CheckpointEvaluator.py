@@ -1,9 +1,9 @@
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
+from flow_portal.evaluation.evaluation_case import CheckpointCriteria
 from flow_portal.evaluation.evaluators.LLMEvaluator import LLMEvaluator
 from flow_portal.evaluation.evaluators.schemas import EvaluationResult
-from flow_portal.evaluation.test_case import CheckpointCriteria
 from flow_portal.logging import logger
 from flow_portal.tracing.processors.base import TracingProcessor
 

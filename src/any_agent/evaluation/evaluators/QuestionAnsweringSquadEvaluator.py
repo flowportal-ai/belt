@@ -3,8 +3,8 @@ from collections.abc import Sequence
 import evaluate.loading
 from typing_extensions import TypedDict
 
+from flow_portal.evaluation.evaluation_case import GroundTruthAnswer
 from flow_portal.evaluation.evaluators.schemas import EvaluationResult
-from flow_portal.evaluation.test_case import GroundTruthAnswer
 
 
 class AnswerDetails(TypedDict):

@@ -8,16 +8,17 @@ from mktestdocs import check_md_file
 # Note the use of `str`, makes for pretty output
 @pytest.mark.parametrize("fpath", pathlib.Path("docs").glob("**/*.md"), ids=str)
 def test_files_all(fpath: pathlib.Path) -> None:
-    # Create a mock for evaluate_telemetry
-    mock_evaluate = MagicMock()
     mock_agent = MagicMock()
     mock_create = MagicMock(return_value=mock_agent)
 
     mock_create_async = AsyncMock()
-    # Patch the evaluate_telemetry function.
-    # Eventually we may want to better validate that the docs use evaluate_telemetry correctly
+    # Mocking the sav_eval results function so that no actual file is created from running the code in evaluation.md
     with (
-        patch("flow_portal.evaluation.evaluate.evaluate_telemetry", mock_evaluate),
+        patch(
+            "flow_portal.evaluation.evaluation_runner.save_evaluation_results",
+            return_value=None,
+        ),
+        patch("flow_portal.evaluation.evaluation_runner.EvaluationRunner.run"),
         patch("flow_portal.AnyAgent.create", mock_create),
         patch("flow_portal.AnyAgent.create_async", mock_create_async),
     ):
