@@ -12,6 +12,7 @@ from flow_portal.config import AgentConfig, AgentFramework, Tool, TracingConfig
 from flow_portal.logging import logger
 from flow_portal.tools.wrappers import _wrap_tools
 from flow_portal.tracing.exporter import AnyAgentExporter
+from flow_portal.tracing.trace import is_tracing_supported
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -172,11 +173,7 @@ class AnyAgent(ABC):
 
         # Agno not yet supported https://github.com/Arize-ai/openinference/issues/1302
         # Google ADK not yet supported https://github.com/Arize-ai/openinference/issues/1506
-        if self.framework in (
-            AgentFramework.AGNO,
-            AgentFramework.GOOGLE,
-            AgentFramework.TINYAGENT,
-        ):
+        if not is_tracing_supported(self.framework):
             logger.warning(
                 "Tracing is not yet supported for AGNO and GOOGLE frameworks. "
             )
