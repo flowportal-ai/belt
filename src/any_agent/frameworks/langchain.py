@@ -2,9 +2,10 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, cast
 
 from flow_portal.config import AgentConfig, AgentFramework, TracingConfig
-from flow_portal.frameworks.flow_portal import AgentResult, AnyAgent
 from flow_portal.logging import logger
 from flow_portal.tools import search_web, visit_webpage
+
+from .flow_portal import AnyAgent
 
 try:
     from langchain_core.language_models import LanguageModelLike
@@ -23,6 +24,8 @@ if TYPE_CHECKING:
     from langchain_core.language_models import LanguageModelLike
     from langchain_core.messages.base import BaseMessage
     from langgraph.graph.graph import CompiledGraph
+
+    from flow_portal.tracing.trace import AgentTrace
 
 
 class LangchainAgent(AnyAgent):
@@ -124,20 +127,16 @@ class LangchainAgent(AnyAgent):
         # so we'll store a list of them in this class
         self._tools = imported_tools
 
-    async def run_async(self, prompt: str, **kwargs: Any) -> AgentResult:
+    async def run_async(self, prompt: str, **kwargs: Any) -> "AgentTrace":
         """Run the LangChain agent with the given prompt."""
         if not self._agent:
             error_message = "Agent not loaded. Call load_agent() first."
             raise ValueError(error_message)
-        self._create_tracer()
         inputs = {"messages": [("user", prompt)]}
         result = await self._agent.ainvoke(inputs, **kwargs)
         if not result.get("messages"):
             msg = "No messages returned from the agent."
             raise ValueError(msg)
         last_message: BaseMessage = result["messages"][-1]
-        return AgentResult(
-            final_output=last_message.content,
-            raw_responses=result["messages"],
-            trace=self._get_trace(),
-        )
+        self._exporter.trace.final_output = str(last_message.content)
+        return self._exporter.trace

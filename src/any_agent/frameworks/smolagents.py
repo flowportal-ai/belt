@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any
 
 from flow_portal.config import AgentConfig, AgentFramework, TracingConfig
-from flow_portal.frameworks.flow_portal import AgentResult, AnyAgent
+from flow_portal.frameworks.flow_portal import AnyAgent
 from flow_portal.tools import search_web, visit_webpage
 
 try:
@@ -13,6 +13,8 @@ except ImportError:
 
 if TYPE_CHECKING:
     from smolagents import MultiStepAgent
+
+    from flow_portal.tracing.trace import AgentTrace
 
 
 DEFAULT_AGENT_TYPE = ToolCallingAgent
@@ -95,15 +97,11 @@ class SmolagentsAgent(AnyAgent):
         if self.config.instructions:
             self._agent.prompt_templates["system_prompt"] = self.config.instructions
 
-    async def run_async(self, prompt: str, **kwargs: Any) -> AgentResult:
+    async def run_async(self, prompt: str, **kwargs: Any) -> "AgentTrace":
         """Run the Smolagents agent with the given prompt."""
         if not self._agent:
             error_message = "Agent not loaded. Call load_agent() first."
             raise ValueError(error_message)
-        self._create_tracer()
         result = self._agent.run(prompt, **kwargs)
-        return AgentResult(
-            final_output=result,
-            raw_responses=self._agent.input_messages,
-            trace=self._get_trace(),
-        )
+        self._exporter.trace.final_output = result
+        return self._exporter.trace

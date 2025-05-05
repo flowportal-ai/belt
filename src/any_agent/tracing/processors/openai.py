@@ -1,20 +1,22 @@
 import contextlib
 import json
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from flow_portal import AgentFramework, AnyAgentSpan
+from flow_portal import AgentFramework
 from flow_portal.logging import logger
-from flow_portal.telemetry import TelemetryProcessor
-from flow_portal.tracing import AnyAgentTrace
+from flow_portal.tracing.processors.base import TracingProcessor
+
+if TYPE_CHECKING:
+    from flow_portal.tracing.trace import AgentSpan, AgentTrace
 
 
-class LlamaIndexTelemetryProcessor(TelemetryProcessor):
-    """Processor for LlamaIndex agent telemetry data."""
+class OpenAITracingProcessor(TracingProcessor):
+    """Processor for OpenAI agent telemetry data."""
 
     def _get_agent_framework(self) -> AgentFramework:
-        return AgentFramework.LLAMA_INDEX
+        return AgentFramework.OPENAI
 
-    def _extract_hypothesis_answer(self, trace: AnyAgentTrace) -> str:
+    def _extract_hypothesis_answer(self, trace: "AgentTrace") -> str:
         for span in reversed(trace.spans):
             # Looking for the final response that has the summary answer
             if span.attributes.get("openinference.span.kind") == "LLM":
@@ -26,7 +28,7 @@ class LlamaIndexTelemetryProcessor(TelemetryProcessor):
         logger.warning("No agent final answer found in trace")
         return "NO FINAL ANSWER FOUND"
 
-    def _extract_llm_interaction(self, span: AnyAgentSpan) -> dict[str, Any]:
+    def _extract_llm_interaction(self, span: "AgentSpan") -> dict[str, Any]:
         attributes = span.attributes
         if not attributes:
             msg = "Span attributes are empty"
@@ -51,7 +53,7 @@ class LlamaIndexTelemetryProcessor(TelemetryProcessor):
 
         return span_info
 
-    def _extract_tool_interaction(self, span: AnyAgentSpan) -> dict[str, Any]:
+    def _extract_tool_interaction(self, span: "AgentSpan") -> dict[str, Any]:
         attributes = span.attributes
         if not attributes:
             msg = "Span attributes are empty"
@@ -70,7 +72,7 @@ class LlamaIndexTelemetryProcessor(TelemetryProcessor):
 
         return span_info
 
-    def _extract_agent_interaction(self, span: AnyAgentSpan) -> dict[str, Any]:
+    def _extract_agent_interaction(self, span: "AgentSpan") -> dict[str, Any]:
         """Extract information from an AGENT span."""
         span_info: dict[str, Any] = {
             "type": "agent",
@@ -85,7 +87,7 @@ class LlamaIndexTelemetryProcessor(TelemetryProcessor):
 
         return span_info
 
-    def _extract_chain_interaction(self, span: AnyAgentSpan) -> dict[str, Any]:
+    def _extract_chain_interaction(self, span: "AgentSpan") -> dict[str, Any]:
         """Extract information from a CHAIN span."""
         attributes = span.attributes
         if not attributes:

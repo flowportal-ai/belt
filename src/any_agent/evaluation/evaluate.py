@@ -9,24 +9,25 @@ from flow_portal.evaluation.evaluators import (
 from flow_portal.evaluation.results_saver import save_evaluation_results
 from flow_portal.evaluation.test_case import TestCase
 from flow_portal.logging import logger
-from flow_portal.telemetry import TelemetryProcessor
-from flow_portal.tracing import AnyAgentSpan, AnyAgentTrace
+from flow_portal.tracing.processors.base import TracingProcessor
+from flow_portal.tracing.trace import AgentTrace
 
 
 def evaluate_telemetry(test_case: TestCase, telemetry_path: str) -> None:
     with open(telemetry_path) as f:
-        spans: list[AnyAgentSpan] = json.loads(f.read())
-        telemetry = AnyAgentTrace(spans=spans)
+        spans = json.loads(f.read())
+        telemetry = AgentTrace(spans=spans)
     logger.info(f"Telemetry loaded from {telemetry_path}")
 
-    agent_framework = TelemetryProcessor.determine_agent_framework(telemetry)
+    agent_framework = TracingProcessor.determine_agent_framework(telemetry)
 
-    processor = TelemetryProcessor.create(agent_framework)
+    processor = TracingProcessor.create(agent_framework)
+    assert processor
     hypothesis_answer = processor._extract_hypothesis_answer(trace=telemetry)
 
     checkpoint_evaluator = CheckpointEvaluator(model=test_case.llm_judge)
     checkpoint_results = checkpoint_evaluator.evaluate(
-        telemetry=telemetry,
+        trace=telemetry,
         checkpoints=test_case.checkpoints,
         processor=processor,
     )
