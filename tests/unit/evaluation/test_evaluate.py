@@ -3,10 +3,9 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from flow_portal.config import AgentFramework
-from flow_portal.evaluation import EvaluationCase, evaluate
+from flow_portal.evaluation import EvaluationCase, TraceEvaluationResult, evaluate
 from flow_portal.evaluation.evaluators.schemas import (
     EvaluationResult,
-    TraceEvaluationResult,
 )
 from flow_portal.tracing.trace import AgentTrace
 
