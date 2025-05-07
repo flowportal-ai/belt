@@ -26,12 +26,12 @@ See [SuperGateway](https://github.com/supercorp-ai/supergateway) for an easy way
 
     ```python
     from flow_portal import AgentConfig
-    from flow_portal.config import MCPStdioParams
+    from flow_portal.config import MCPStdio
 
     main_agent = AgentConfig(
         model_id="gpt-4o-mini",
         tools=[
-            MCPStdioParams(
+            MCPStdio(
                 command="docker",
                 args=["run", "-i", "--rm", "mcp/fetch"],
                 tools=["fetch"]
@@ -44,12 +44,12 @@ See [SuperGateway](https://github.com/supercorp-ai/supergateway) for an easy way
 
     ```python
     from flow_portal import AgentConfig
-    from flow_portal.config import MCPSseParams
+    from flow_portal.config import MCPSse
 
     main_agent = AgentConfig(
         model_id="gpt-4o-mini",
         tools=[
-            MCPSseParams(
+            MCPSse(
                 url="http://localhost:8000/sse"
             ),
         ]

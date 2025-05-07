@@ -7,7 +7,7 @@ from google.adk.tools.mcp_tool.mcp_toolset import (  # type: ignore[attr-defined
     SseServerParams as GoogleSseServerParameters,
 )
 
-from flow_portal.config import AgentFramework, MCPSseParams, Tool
+from flow_portal.config import AgentFramework, MCPSse, Tool
 from flow_portal.tools import _get_mcp_server
 
 
@@ -34,7 +34,7 @@ def google_toolset(tools: Sequence[Tool]) -> Generator[GoogleMCPToolset]:
 async def test_google_mcp_sse_integration(
     google_toolset: GoogleMCPToolset,
     google_sse_params: GoogleSseServerParameters,
-    mcp_sse_params_no_tools: MCPSseParams,
+    mcp_sse_params_no_tools: MCPSse,
 ) -> None:
     mcp_server = _get_mcp_server(mcp_sse_params_no_tools, AgentFramework.GOOGLE)
     await mcp_server._setup_tools()

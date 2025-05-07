@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 from agno.tools.mcp import MCPTools as AgnoMCPTools
 
-from flow_portal.config import AgentFramework, MCPSseParams, Tool
+from flow_portal.config import AgentFramework, MCPSse, Tool
 from flow_portal.tools import _get_mcp_server
 
 
@@ -20,7 +20,7 @@ def agno_mcp_tools() -> Generator[AgnoMCPTools]:
     "enter_context_with_transport_and_session",
 )
 async def test_agno_mcp_sse_integration(
-    mcp_sse_params_with_tools: MCPSseParams,
+    mcp_sse_params_with_tools: MCPSse,
     session: Any,
     tools: Sequence[Tool],
     agno_mcp_tools: AgnoMCPTools,

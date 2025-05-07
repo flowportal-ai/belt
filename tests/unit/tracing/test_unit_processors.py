@@ -3,13 +3,13 @@ from opentelemetry.sdk.trace import ReadableSpan
 
 from flow_portal import AgentFramework
 from flow_portal.tracing import TracingProcessor
-from flow_portal.tracing.trace import AgentSpan, is_tracing_supported
+from flow_portal.tracing.trace import AgentSpan, _is_tracing_supported
 
 
 def test_extract_interaction(
     agent_framework: AgentFramework, llm_span: ReadableSpan
 ) -> None:
-    if not is_tracing_supported(agent_framework):
+    if not _is_tracing_supported(agent_framework):
         pytest.skip()
     processor = TracingProcessor.create(AgentFramework(agent_framework))
     # to make mypy happy

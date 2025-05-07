@@ -2,7 +2,8 @@
 
 `any-agent` uses [`openinference`](https://github.com/Arize-ai/openinference) to generate
 standardized [OpenTelemetry](https://opentelemetry.io/) traces for any of the supported `Frameworks`.
-The trace is returned by calling the `agent.run` or `agent.run_async` functions.
+
+An [`AgentTrace`][flow_portal.tracing.trace.AgentTrace] is returned when calling [`agent.run`][flow_portal.AnyAgent.run] or [`agent.run_async`][flow_portal.AnyAgent.run_async].
 
 ## Example
 

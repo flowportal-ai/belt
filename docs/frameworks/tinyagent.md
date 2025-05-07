@@ -10,7 +10,7 @@ You can find it in [`flow_portal.frameworks.tinyagent`](https://github.com/mozil
 
 ```python
 from flow_portal import AnyAgent, AgentConfig
-from flow_portal.config import MCPStdioParams
+from flow_portal.config import MCPStdio
 
 agent = AnyAgent.create(
     "tinyagent",
@@ -18,7 +18,7 @@ agent = AnyAgent.create(
         model_id="gpt-4.1-nano",
         instructions="You must use the available tools to find an answer",
         tools=[
-            MCPStdioParams(
+            MCPStdio(
                 command="uvx",
                 args=["duckduckgo-mcp-server"]
             )

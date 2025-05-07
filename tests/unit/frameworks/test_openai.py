@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from flow_portal import AgentConfig, AgentFramework, AnyAgent
-from flow_portal.config import MCPStdioParams
+from flow_portal.config import MCPStdio
 from flow_portal.tools import (
     ask_user_verification,
     search_web,
@@ -109,7 +109,7 @@ def test_load_openai_with_mcp_server() -> None:
             AgentConfig(
                 model_id="gpt-4o",
                 tools=[
-                    MCPStdioParams(
+                    MCPStdio(
                         command="docker",
                         args=["run", "-i", "--rm", "mcp/fetch"],
                         tools=["fetch"],
