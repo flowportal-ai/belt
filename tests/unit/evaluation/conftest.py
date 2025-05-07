@@ -2,7 +2,8 @@ import json
 
 import pytest
 
-from flow_portal.evaluation.evaluation_case import CheckpointCriteria, EvaluationCase
+from flow_portal.evaluation.evaluation_case import EvaluationCase
+from flow_portal.evaluation.schemas import CheckpointCriteria
 from flow_portal.tracing.trace import AgentSpan, AgentTrace
 
 
@@ -26,4 +27,4 @@ def agent_trace() -> AgentTrace:
     with open(trace_path, encoding="utf-8") as f:
         spans = json.loads(f.read())
     spans = [AgentSpan.model_validate_json(span) for span in spans]
-    return AgentTrace(spans=spans)
+    return AgentTrace(spans=spans, final_output="Final output")
